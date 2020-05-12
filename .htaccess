@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteRule ^in/([0-9a-zA-Z\_\-]+)/([0-9a-zA-Z\_\-]+)/([0-9a-zA-Z\_\-]+) /?r=$1&v=$2&i=$3 [L]
+RewriteRule ^in/([0-9a-zA-Z\_\-]+)/([0-9a-zA-Z\_\-]+) /?r=$1&v=$2 [L]
+RewriteRule ^in/([0-9a-zA-Z\_\-]+) /?r=$1&v=$2 [L]

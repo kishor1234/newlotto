@@ -7,9 +7,9 @@ if (!isset($_SESSION["cart"])) {
 }
 //$_SESSION["msg"]="work";
 define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
-define("domain", "http://newloto.lcl/");
+define("domain", "http://omlotto.com/");
 define("company", "omlotto");
-define("api_url", "http://server.newloto.lcl");
+define("api_url", "http://api.omlotto.com");
 define("noreplayid", "no-replay@omlotto.com");
 /*
  * ---------------------------------------------------------------
