@@ -1,0 +1,13 @@
+{
+    "name": "vendor/php-excel",
+    "description": "Description of project phpExcel.",
+    "authors": [
+        {
+            "name": "Administrator",
+            "email": "your@email.here"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.10"
+    }
+}

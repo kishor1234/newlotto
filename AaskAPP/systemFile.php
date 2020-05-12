@@ -1,0 +1,1 @@
+<?php $libConfig=array('_configuration'=>'_configuration.php','ask_MongoDB'=>'lib/ask_MongoDB.php','ask_mysqli'=>'lib/ask_mysqli.php','ask_mailer'=>'lib/phpmailer/ask_mailer.php'); 
