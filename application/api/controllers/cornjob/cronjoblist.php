@@ -20,7 +20,7 @@
 
 require_once controller;
 
-class resetGameLoad extends CAaskController {
+class cronjoblist extends CAaskController {
 
     //put your code here
 
@@ -44,13 +44,18 @@ class resetGameLoad extends CAaskController {
     public function execute() {
         parent::execute();
         try {
-            $count = $this->getData($this->ask_mysqli->selectCount("gametime", "id"), "count(id)");
-            $sql = $this->ask_mysqli->select("gameseries", $_SESSION["db_1"]);
+
+            $sql = $this->ask_mysqli->select("gametime", $_SESSION["db_1"]);
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
             while ($row = $result->fetch_assoc()) {
-                $series = explode("-", $row["series"]);
-                $this->porcessSeries($series,$count);
-                $this->adminDB[$_SESSION["db_1"]]->query("UPDATE `gametime` SET `status` = '0'");
+                $time = explode(":", $row["etime"]);
+                if ($time[1] === "00") {
+                    $time[1] = 60;
+                }
+                $min = $time[1] - 1;
+
+                echo "{$min} {$time[0]} * * * sleep 50; wget http://api.omlotto.com/?r=calculateResult";
+                echo "<br>";
             }
         } catch (Exception $ex) {
             
@@ -81,7 +86,7 @@ class resetGameLoad extends CAaskController {
         return $this->ask_mysqli->update($data, "`{$series}`");
     }
 
-    function porcessSeries($series,$count) {
+    function porcessSeries($series, $count) {
         for ($i = $series[0]; $i <= $series[1]; $i = $i + 100) {
             $sql = $this->reset($i, $count);
             $this->adminDB[$_SESSION["db_1"]]->query($sql);

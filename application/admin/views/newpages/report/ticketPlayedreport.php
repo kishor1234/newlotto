@@ -19,7 +19,7 @@
                                 <link rel="stylesheet"
                                       href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
-                                <style>
+<!--                                <style>
                                     #tickets-data {
                                         width: 250px;
                                         max-width: 250px;
@@ -96,7 +96,7 @@
                                     .signImage {
                                         width: 100%;
                                     }
-                                </style>
+                                </style>-->
                                 <!-- Modal content-->
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -126,7 +126,7 @@
                                                 <div class="col-3">
                                                     <div class="form-group">
                                                         <label>Select Retailers</label>
-                                                        <select class="form-control select2" name="own" required>
+                                                        <select class="form-control select2" id="own" name="own" required>
                                                             <?php
                                                             $responseData = $main->jsonRespon(api_url . "/?r=CAddUser", array("action" => "allUser"));
                                                             $json = json_decode($responseData, true);
@@ -147,7 +147,7 @@
                                                                     <i class="far fa-calendar-alt"></i>
                                                                 </span>
                                                             </div>
-                                                            <input type="date" class="form-control float-right" id="reservation" name="dateform" max="<?= date("Y-m-d"); ?>" required>
+                                                            <input type="date" class="form-control float-right" id="dateform" name="dateform" max="<?= date("Y-m-d"); ?>" required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -160,7 +160,7 @@
                                                                     <i class="far fa-calendar-alt"></i>
                                                                 </span>
                                                             </div>
-                                                            <input type="date" class="form-control float-right" id="reservation" name="dateto" max="<?= date("Y-m-d"); ?>" required>
+                                                            <input type="date" class="form-control float-right" id="dateto" name="dateto" max="<?= date("Y-m-d"); ?>" required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -230,14 +230,7 @@
         };
         $("#myMainForm").submit(function () {
             $("#myMainSubmit").attr("disabled", true);
-            var formdata = new FormData($("#myMainForm")[0]);
-            var object = {};
-            formdata.forEach(function (value, key) {
-                object[key] = value;
-            });
-            var json = JSON.stringify(object);
-            //console.log(json);
-            //var table = null;
+
             table = $('#myTable').DataTable({
                 serverSide: true,
                 Processing: true,
@@ -248,10 +241,13 @@
                     'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
                 ajax: {
-                    url: '<?= api_url ?>/?r=CTicketReport',
+                    url: '<?= api_url ?>/?r=CTicketReport&own=' + $("#own").val() + '&dateform=' + $("#dateform").val() + '&dateto=' + $("#dateto").val() + '&action=searchTicket',
                     type: "post", // method  , by default get
                     dataType: "json",
-                    data: json, //{action: $("#action").val(), own: $("#own").val(), dateform: $("#dateform").val(), dateto: $("#dateto").val()},
+//                    success: function (sta) {
+//                        console.log(sta);
+//                    },
+                    //data: json, //{action: $("#action").val(), own: $("#own").val(), dateform: $("#dateform").val(), dateto: $("#dateto").val()},
                     error: function () {  // error handling
                         //console.log(formdata);
                         $(".data-grid-error").html("");

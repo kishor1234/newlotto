@@ -69,13 +69,13 @@
                         <li class="nav-item">
                             <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=grandSale', '#app-container', false)" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>My Grand Sel</p>
+                                <p>My Grand Sell</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=getcashsummary', '#app-container', false)" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>My Retailers Cahs Summery</p>
+                                <p>My Retailers Cash Summery</p>
                             </a>
                         </li>
                         <li class="nav-item">

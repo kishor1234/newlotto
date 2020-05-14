@@ -24,6 +24,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css">
         <!-- jQuery -->
         <script src="assets/plugins/jquery/jquery.min.js"></script>
+        
+    
         <script src="assets/js/jquerysession.js" type="text/javascript"></script>
         <!-- Bootstrap 4 -->
         <script src="assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -153,6 +155,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#">Total Point <i class="fas fa-money"></i> <span id="exams"></span></a>
                     </li>
 
                 </ul>

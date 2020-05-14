@@ -75,6 +75,9 @@ class CAddUser extends CAaskController {
                 break;
             case "changePassword":
                 break;
+            case "updateper":
+                $this->updateper();
+                break;
             case "allUser":
                 $this->allUser();
                 break;
@@ -228,7 +231,7 @@ class CAddUser extends CAaskController {
             if ($last_id > 25) {
                 array_push($error, "You Enter Only 25 id, try update limit...!");
             }
-            $userid = date("Y").date("m").date("d") + $last_id;
+            $userid = date("Y") . date("m") . date("d") + $last_id;
             $sql = $this->ask_mysqli->update(array("userid" => $userid), "enduser") . $this->ask_mysqli->whereSingle(array("id" => $last_id));
             $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
             if (empty($error)) {
@@ -407,6 +410,19 @@ class CAddUser extends CAaskController {
         }
     }
 
+    function updateper() {
+        try {
+            $sql = $this->ask_mysqli->update(array("resultper" => $_POST["resultper"]), "admin") . $this->ask_mysqli->whereSingle(array("id" => $_POST["id"]));
+            if ($this->adminDB[$_SESSION["db_1"]]->query($sql)) {
+                echo json_encode(array("toast" => array("success", "Admin", "Information Update Success... "), "status" => 1, "message" => "User Information Update Success.. "));
+            } else {
+                echo json_encode(array("toast" => array("danger", "Admin", "Information Update Failed... "), "status" => 0, "message" => "User Information Update Failed.. {$json_error}"));
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
+
     function adminBalance() {
 
         $data = array();
@@ -414,6 +430,7 @@ class CAddUser extends CAaskController {
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
         $row = $result->fetch_assoc();
         $data["3"] = $row["balance"];
+        $data["4"] = $row["resultper"];
 
         $sql = $this->ask_mysqli->selectCount("enduser", "id");
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);

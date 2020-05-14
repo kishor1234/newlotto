@@ -56,8 +56,10 @@ class CTicketReport extends CAaskController {
         $request1 = implode(" ", $_POST);
         $request2 = str_replace(" ", "", $request1);
         $request3 = str_replace("1ArrayArray010Array", "", $request2);
-        $request = json_decode($request3, true);
-        // echo json_encode($_POST);die;
+        $request = $_REQUEST; //json_decode($request3, true);
+        
+//        $_REQUEST["sql"] = $this->ask_mysqli->select("entry", $_SESSION["db_1"]).$this->ask_mysqli->whereBetweenDatesID("enterydate", $request["dateform"], $request["dateto"], "own", $request["own"]);
+//       echo json_encode($_REQUEST);die;
         switch ($request["action"]) {
             case "searchTicket":
                 //$_REQUEST=$request;

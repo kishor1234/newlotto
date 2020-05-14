@@ -65,6 +65,9 @@ define("SUB", $op);
 $_SESSION["t"] = 0;
 
 switch ($op) {
+    case 'api':
+        $application_folder = 'application/api';
+        break;
     case 'server':
         $application_folder = 'application/api';
         break;
