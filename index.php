@@ -71,9 +71,12 @@ switch ($op) {
     case 'server':
         $application_folder = 'application/api';
         break;
-    
-    default :
+    case 'admin':
         $application_folder = 'application/admin';
+        break;
+
+    default :
+        $application_folder = 'application/web';
         break;
 }
 //define("aaskModel", $aaskModel);

@@ -81,6 +81,15 @@ class CAddUser extends CAaskController {
             case "allUser":
                 $this->allUser();
                 break;
+            case "uploadGame":
+                $this->upoadGame();
+                break;
+            case "loadGame":
+                $this->loadGame();
+                break;
+            case "deleteGame":
+                $this->deleteGame();
+                break;
             default :
                 $postdata = file_get_contents("php://input");
                 $request = json_decode($postdata, true);
@@ -104,6 +113,80 @@ class CAddUser extends CAaskController {
     public function distory() {
         parent::distory();
         return;
+    }
+
+    function upoadGame() {
+        $uploadDir = "assets/upload/hostGame";
+        $fileData = $this->uploadFiletoFileSystem('file', $uploadDir);
+        $fileData["game"] = $_POST["game"];
+        $sql = $this->ask_mysqli->insert("hostgame", $fileData);
+        
+        if ($this->adminDB[$_SESSION["db_1"]]->query($sql)) {
+            echo json_encode(array("toast" => array("success", "Game", " Added Successfully"), "status" => 1, "message" => "Add Successfully.."));
+        } else {
+            unlink($fileData["path"]);
+            echo json_encode(array($fileData, "toast" => array("danger", "Game", " Added Failed " . $this->adminDB[$_SESSION["db_1"]]->error), "status" => 0, "message" => "Insert Failed.."));
+        }
+    }
+
+    function loadGame() {
+        try {
+            $request = $_REQUEST;
+            $col = array(
+                0 => 'id',
+                1 => 'game',
+                2 => 'name',
+                3 => 'extension',
+                4 => 'url',
+                5 => 'path',
+                6 => 'isUser',
+                7 => 'onCreate'
+            );
+            $sql = $this->ask_mysqli->select("hostgame", $_SESSION["db_1"]);
+            $query = $this->executeQuery($_SESSION["db_1"], $sql);
+            $totalData = $query->num_rows;
+            $totalFilter = $totalData;
+            $sql .=$this->ask_mysqli->whereSingle(array("1" => "1"));
+            /* Search */
+            if (!empty($request['search']['value'])) {
+                $sql.=" AND (name Like '%" . $request['search']['value'] . "%'";
+                $sql.=" OR  mobileno Like '%" . $request['search']['value'] . "%')";
+            }
+            /* Order */
+            $sql.=$this->ask_mysqli->orderBy($request['order'][0]['dir'], $col[$request['order'][0]['column']]) . $this->ask_mysqli->limitWithOffset($request['start'], $request['length']);
+            $query = $this->executeQuery($_SESSION["db_1"], $sql);
+            $totalData = $query->num_rows;
+            while ($row = $query->fetch_assoc()) {
+                $subdata = array();
+                $subdata[] = $row['id'];
+                $subdata[] = $row['game'];
+                $subdata[] = '<a target="_blank" href="{$row["url"]}" class="btn btn-success btn-xs"> <i class="fa fa-download"></i></a>';
+                $subdata[] = $row['onCreate'];
+                $subdata[] = '<button onclick="deleteGame(' . $row["id"] . ',0)" class="btn btn-danger btn-xs"> <i class="fa fa-trash-o"></i></button>';
+                $data[] = $subdata;
+            }
+            $json_data = array(
+                "draw" => intval($request['draw']),
+                "recordsTotal" => intval($totalData),
+                "recordsFiltered" => intval($totalFilter),
+                "data" => $data,
+            );
+            echo json_encode($json_data);
+        } catch (Exception $ex) {
+            error_log($ex, 3, "error.log");
+        }
+    }
+
+    function deleteGame() {
+        $sql = $this->ask_mysqli->select("hostgame", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $_POST["id"]));
+        $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
+        if ($row = $result->fetch_assoc()) {
+            unlink($row["path"]);
+            $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->delete("hostgame") . $this->ask_mysqli->whereSingle(array("id" => $_POST["id"])));
+            echo json_encode(array("toast" => array("success", "Game", " Delete Successfully"), "status" => 1, "message" => "Game Delete Successfully.."));
+        } else {
+            echo json_encode(array("toast" => array("danger", "Game", " Delete Failed..Try again"), "status" => 0, "message" => "Delete Failed..Try again"));
+        }
     }
 
     function loadTable() {
