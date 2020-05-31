@@ -51,10 +51,10 @@ class cronjoblist extends CAaskController {
                 $time = explode(":", $row["etime"]);
                 if ($time[1] === "00") {
                     $time[1] = 60;
+                    $time[0] = $time[0] - 1;
                 }
                 $min = $time[1] - 1;
-
-                echo "{$min} {$time[0]} * * * sleep 50; wget http://api.omlotto.com/?r=calculateResult";
+                echo "{$min} {$time[0]} * * * sleep 50; wget " . api_url . "/?r=calculateResult";
                 echo "<br>";
             }
         } catch (Exception $ex) {
