@@ -73,7 +73,7 @@ class singleResult extends CAaskController {
     }
 
     public function AllResult($data) {
-        $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->selectSpacific(array("series", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), "winnumber") . $this->ask_mysqli->whereSingle(array("gdate" => date("Y-m-d"))).$this->ask_mysqli->orderBy("DESC","gameid").$this->ask_mysqli->limitWithOutOffset(3));
+        $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->selectSpacific(array("gameetime","series", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), "winnumber") . $this->ask_mysqli->whereSingle(array("gdate" => date("Y-m-d"))).$this->ask_mysqli->orderBy("DESC","gameid").$this->ask_mysqli->limitWithOutOffset(3));
         $data2 = array();
         while ($row = $result->fetch_assoc()) {
             //unset($row["loadarray"]);
@@ -87,7 +87,7 @@ class singleResult extends CAaskController {
     }
 
     public function defaultResult($data) {
-        $sql=$this->ask_mysqli->selectSpacific(array("series", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), "winnumber") . $this->ask_mysqli->where(array("gdate" => date("Y-m-d"), "series"=>$data["series"]), "AND").$this->ask_mysqli->orderBy("DESC","gameid").$this->ask_mysqli->limitWithOutOffset(1);
+        $sql=$this->ask_mysqli->selectSpacific(array("gameetime","series", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), "winnumber") . $this->ask_mysqli->where(array("gdate" => date("Y-m-d"), "series"=>$data["series"]), "AND").$this->ask_mysqli->orderBy("DESC","gameid").$this->ask_mysqli->limitWithOutOffset(1);
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
         $data2 = array();
         while ($row = $result->fetch_assoc()) {
