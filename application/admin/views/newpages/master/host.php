@@ -13,7 +13,7 @@
                         <div class="card-header">
                             <div class="card-title mb-2">
                                 <!-- Button to Open the Modal -->
-                                <button type="button" class="btn btn-primary" data-toggle="modal" onclick="$('#myMainForm')[0].reset();" data-target="#myMain">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" onclick="$('#delopyFile')[0].reset();" data-target="#myMain">
                                     Deploy Game <i class="fas fa-plus"></i>
                                 </button>
                                 <div class="modal fade preview-modal" data-backdrop="" id="myMain" role="dialog" aria-labelledby="preview-modal" aria-hidden="true">
@@ -31,7 +31,7 @@
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-lg-12">
-                                                        <form action="#" method="post" id="myMainForm" enctype="multipart/form-data">
+                                                        <form action="#" method="post" id="delopyFile" enctype="multipart/form-data">
                                                             <div class="form-group">
                                                                 <label class="form-control-label">Game Name and Version <span class="text-danger">*</span></label>
                                                                 <input type="text" name="game" id="game" placeholder="Enter Message" title="Message" required autocomplete="off" class="form-control">
@@ -44,15 +44,15 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <input type="hidden" name="action" id="action" value="uploadGame">
-                                                                <button class="btn btn-primary btn-sm form-control" id="myMainSubmit">Upload Game</button>
+                                                                <button class="btn btn-primary btn-sm form-control" id="delopyFileSubmit">Upload Game</button>
                                                             </div>
                                                         </form>
                                                     </div>
                                                 </div>
-
+                                                <div id="uploadStatus"></div>
                                                 <br>
                                                 <div class="progress" id="progress">
-                                                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" id="inner-progress mainpro1">Please wait....</div>
+                                                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" id="inner-progress">Please wait....</div>
                                                 </div>
                                             </div>
 
@@ -136,9 +136,9 @@
                 searchPlaceholder: "Search"
             }
         });
-        $("#myMainForm").submit(function () {
-            $("#myMainSubmit").attr("disabled", true);
-            var formdata = new FormData($("#myMainForm")[0]);
+        $("#delopyFile").submit(function () {
+            $("#deployFileSubmit").attr("disabled", true);
+            var formdata = new FormData($("#delopyFile")[0]);
             $.ajax({
                 url: '<?= api_url ?>/?r=CAddUser',
                 type: 'post',
@@ -147,20 +147,27 @@
                 contentType: false,
                 cache: false,
                 processData: false,
+                beforeSend: function () {
+                    $("#inner-progress").width('0%');
+                    
+                },
                 xhr: function () {
                     $("#mainloadimg").show();
                     $("#progress").show();
-                    var xhr = new XMLHttpRequest();
-                    xhr.upload.addEventListener('progress', function (e) {
-                        var progressbar = Math.round((e.loaded / e.total) * 100);
-                        $("#mainpro1").css('width', progressbar + '%');
-                        $("#mainpro1").html(progressbar + '%');
-                    });
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete =  ((evt.loaded / evt.total) * 100);
+                            $("#inner-progress").width(percentComplete + '%');
+                            $("#inner-progress").html(Math.floor(percentComplete) + '%');
+                        }
+
+                    }, false);
                     return xhr;
                 },
                 success: function (data) {
                     console.log(data);
-                    $("#myMainSubmit").attr("disabled", false);
+                    $("#delopyFileSubmit").attr("disabled", false);
                     $("#mainloadimg").hide();
                     var json = JSON.parse(data);
                     if (json.status === 1) {
@@ -170,7 +177,7 @@
                     } else {
                         swal("Error", json.msg, "error");
                     }
-                    $('#myMainForm')[0].reset();
+                    $('#delopyFile')[0].reset();
                     $.toaster({priority: json.toast[0], title: json.toast[1], message: json.toast[2]});
                     $("#mainpro1").css('width', '0%');
                     $("#mainpro1").html('0%');
@@ -180,6 +187,7 @@
                 },
                 error: function (xhr, error, code)
                 {
+                    $('#uploadStatus').html('<p style="color:#EA4335;">File upload failed, please try again.</p>');
                     console.log(xhr);
                     console.log(code);
                 }
@@ -187,7 +195,7 @@
             return false;
         });
     });
-   function deleteGame(id, st)
+    function deleteGame(id, st)
     {
         swal({
             title: "Are you sure?",
@@ -209,6 +217,6 @@
 
         });
     }
-    
-    
+
+
 </script>

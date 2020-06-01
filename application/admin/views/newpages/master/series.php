@@ -13,9 +13,9 @@
                         <div class="card-header">
                             <div class="card-title mb-2">
                                 <!-- Button to Open the Modal -->
-                                <button type="button" class="btn btn-primary" data-toggle="modal" onclick="$('#myMainForm')[0].reset();" data-target="#myMain">
+                                <!--<button type="button" class="btn btn-primary" data-toggle="modal" onclick="$('#myMainForm')[0].reset();" data-target="#myMain">
                                     Add Game Series <i class="fas fa-plus"></i>
-                                </button>
+                                </button>-->
                                 <div class="modal fade preview-modal" data-backdrop="" id="myMain" role="dialog" aria-labelledby="preview-modal" aria-hidden="true">
 
                                     <div class="modal-dialog">
