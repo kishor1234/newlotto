@@ -51,9 +51,9 @@ class gamelogin extends CAaskController {
         if ($row = $result->fetch_assoc()) {
             if (empty($row["device"])) {
                 //insert device
-                $sql=$this->ask_mysqli->update(array("device"=>$data["device"]),"enduser").$this->ask_mysqli->whereSingle($row["id"]);
+                $sql=$this->ask_mysqli->update(array("device"=>$request["device"]),"enduser").$this->ask_mysqli->whereSingle(array("id"=>$row["id"]));
                 $this->adminDB[$_SESSION["db_1"]]->query($sql);
-                echo json_encode(array("status" => "1", "message" => "login Success..", "id" => $row["id"], "userid" => $row["userid"],"name" => $row["name"]));
+                echo json_encode(array("status" => "1", "message" => "login Success..{$sql}", "id" => $row["id"], "userid" => $row["userid"],"name" => $row["name"]));
             } else if ($row["device"] === $request["device"]) {
                 echo json_encode(array("status" => "1", "message" => "login Success..", "id" => $row["id"], "userid" => $row["userid"],"name" => $row["name"]));
             } else {
