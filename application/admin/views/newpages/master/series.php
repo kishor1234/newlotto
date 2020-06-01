@@ -75,7 +75,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Game Series</th>                                            
-                                           
+
                                             <th class="datatable-nosort">Action</th>
                                         </tr>
                                     </thead>
@@ -83,7 +83,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Game series</th>                                            
-                                            
+
                                             <th>Action</th>
                                         </tr>
                                     </tfoot>
@@ -185,7 +185,7 @@
             return false;
         });
     });
-   
+
     function deleteSeries(id, st)
     {
         swal({
@@ -208,5 +208,5 @@
 
         });
     }
-    
+
 </script>
