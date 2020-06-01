@@ -591,7 +591,7 @@ class CAaskController extends CI_Controller {
             return array(
                 "name" => $name,
                 "extension" => $_FILES[$image]['type'],
-                "url" => $filename,
+                "url" => game."".$filename,
                 "path" => $path,
                 "isUsed" => 1
             );
