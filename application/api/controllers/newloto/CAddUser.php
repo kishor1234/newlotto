@@ -119,7 +119,7 @@ class CAddUser extends CAaskController {
         $uploadDir = "assets/upload/hostGame";
         $fileData = $this->uploadFiletoFileSystem('file', $uploadDir);
         $fileData["game"] = $_POST["game"];
-        echo $sql = $this->ask_mysqli->insert("hostgame", $fileData);
+        $sql = $this->ask_mysqli->insert("hostgame", $fileData);
         
         if ($this->adminDB[$_SESSION["db_1"]]->query($sql)) {
             echo json_encode(array("toast" => array("success", "Game", " Added Successfully"), "status" => 1, "message" => "Add Successfully.."));
