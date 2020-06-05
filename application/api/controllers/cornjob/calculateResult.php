@@ -17,11 +17,13 @@ class calculateResult extends CAaskController {
 
     public function __construct() {
         parent::__construct();
+        //die;
     }
 
     public function create() {
         parent::create();
         //status=0  to all draw active
+       
         $sql = "select * from gametime where etime>='" . date("H:i:s") . "'";
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
         if ($row = $result->fetch_assoc()) {
@@ -29,7 +31,7 @@ class calculateResult extends CAaskController {
             $_POST["stime"] = $row["stime"];
             $_POST["etime"] = $row["etime"];
         }
-        //print_r($_POST);die;
+       // print_r($_POST);die;
         //$this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->update(array("status" => "1"), "gametime") . $this->ask_mysqli->whereSingle(array("id" => $_POST["gameid"])));
         //end active status
         $t = 1; //test for manual
@@ -94,11 +96,18 @@ class calculateResult extends CAaskController {
     public function execute() {
         parent::execute();
         try {
+            
             $sum = 0;
             $dper = $this->per;
             $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("admin", $_SESSION["db_1"]));
+
             if ($row = $result->fetch_assoc()) {
                 $dper = $row["resultper"];
+                
+                if ($row["cron"] == 0) {
+                    echo "Admin Stop Result";
+                    die;
+                }
             }
 
             $resultSeries = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("gameseries", $_SESSION["db_1"]));
@@ -667,9 +676,8 @@ class calculateResult extends CAaskController {
 
     function ResetDrawLoad($subSeries) {
         for ($i = $subSeries[0]; $i <= $subSeries[1]; $i = $i + 100) {
-            $sql= $this->ask_mysqli->update(array("" . $_POST["gameid"] . "" => 0), "`" . $i . "`");
+            $sql = $this->ask_mysqli->update(array("" . $_POST["gameid"] . "" => 0), "`" . $i . "`");
             $this->adminDB[$_SESSION["db_1"]]->query($sql);
-           
         }
 //        $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->update(array("`" . $_POST["gameid"] . "`" => 0), "lottoweight"));
 //        for ($i = 1000; $i < 2000; $i = $i + 100) {

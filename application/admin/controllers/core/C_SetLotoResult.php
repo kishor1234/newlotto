@@ -69,7 +69,7 @@ class C_SetLotoResult extends CAaskController {
             $data = array("series" => $_POST["series"], "gameid" => $_POST["gameid"], "gamestime" => $_POST["stime"], "gameetime" => $_POST["etime"], "gdate" => date("Y-m-d"), "dload" => "N", "80per" => "N", "loadarray" => $_POST["loadarray"]);
             $d = array_merge($data, $lottery);
 
-            $query = $this->ask_mysqli->select("winnumber", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("gameid" => $_POST["gameid"], "gamestime" => $_POST["stime"], "gameetime" => $_POST["etime"], "gdate" => date("Y-m-d")), "AND");
+            $query = $this->ask_mysqli->select("winnumber", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("series"=>$_POST["series"],"gameid" => $_POST["gameid"], "gamestime" => $_POST["stime"], "gameetime" => $_POST["etime"], "gdate" => date("Y-m-d")), "AND");
             $rp = $this->adminDB[$_SESSION["db_1"]]->query($query);
             if ($r = $rp->fetch_assoc()) {
                 echo "already Result Disply"; //$this->ResetDrawLoad();

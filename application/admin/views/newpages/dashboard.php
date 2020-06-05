@@ -73,8 +73,32 @@
                 <!-- /.col -->
             </div>
             <div class="row">
-                <div class="col-lg-12">
-                    
+                <style>
+                    #center{
+                        text-align: center;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+                </style>
+                <div class="col-8 offset-2">
+                    <div id="center">
+                        <?php
+                        $result = $main->adminDB[$_SESSION["db_1"]]->query($main->ask_mysqli->select("admin", $_SESSION["db_1"]));
+                        $row = $result->fetch_assoc();
+                        if ((int) $row["cron"] == 0) {
+                            ?>
+                            <h1>Click Button to Start Result</h1>
+                            <button class="btn btn-success" onclick="ResultServices(1)"><i class="fa fa-star"></i> Start</button>
+                            <?php
+                        } else {
+                            ?>
+                            <h1>Click Button to Stop Result</h1>
+                            <button class="btn btn-danger" onclick="ResultServices(0)"><i class="fa fa-stop"></i> Stop</button>
+
+                            <?php
+                        }
+                        ?>
+                    </div>
                 </div>
             </div>
 
@@ -190,6 +214,12 @@
             $("#students").html(js[2]);
             $("#exams").html(js[3]);
             $("#per").html(js[4] + "%");
+        });
+    }
+    function ResultServices(id)
+    {
+        $.post("<?= api_url ?>?r=CStartorStop", {cron: id}, function (data) {
+            $("#center").html(data);
         });
     }
 </script>

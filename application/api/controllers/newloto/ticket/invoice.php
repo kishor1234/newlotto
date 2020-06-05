@@ -41,12 +41,13 @@ class invoice extends CAaskController {
     public function execute() {
         parent::execute();
 //        $myfile = fopen("data.json", "r") or die("Unable to open file!");
-//        $request = fread($myfile, filesize("data.json"));
+//        $postdata = fread($myfile, filesize("data.json"));
 //        fclose($myfile);
         $postdata = file_get_contents("php://input");
         $request = json_decode($postdata, true);
 
         $jsonData = json_decode($postdata, true);
+        //print_r($jsonData);
         $sql = $this->ask_mysqli->select("enduser", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("userid" => $jsonData["basic"]["userid"]));
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
         if ($row = $result->fetch_assoc()) {
@@ -59,60 +60,18 @@ class invoice extends CAaskController {
                 $error = array();
                 $perPoint = $jsonData["basic"]["perPoint"];
                 $this->adminDB[$_SESSION["db_1"]]->autocommit(FALSE);
-                foreach ($jsonData["data"] as $Key => $Array) {
-                    foreach ($Array as $_1key => $_1array) {
-                        foreach ($_1array as $_2key => $_2array) {
-                            //echo $_2key;
-                            foreach ($_2array as $in => $valArray) {
-                                foreach ($valArray as $index => $value) {
-                                    //print_r($value);echo "\n";
-                                    $t = $t + $value;
-                                    if ($limit == 56) {
-                                        $final = array(
-                                            "own" => $jsonData["basic"]["userid"],
-                                            "totalpoint" => (string) $qty,
-                                            "amount" => (string) ($qty * $perPoint),
-                                            "enterydate" => (string) date("Y-m-d"),
-                                            "winstatus" => (string) 0,
-                                            "winamt" => (string) 0,
-                                            "claimstatus" => (string) 0,
-                                            "ip" => $jsonData["basic"]["ip"],
-                                            "gametime" => $jsonData["basic"]["start"],
-                                            "gameendtime" => $jsonData["basic"]["end"],
-                                            "gametimeid" => $jsonData["basic"]["drawid"],
-                                            "game" => uniqid("ask"),
-                                            "point" => $temp
-                                        );
-                                        array_push($finalArray, $final);
-                                        $limit = 1;
-                                        $qty = 0;
-                                        $temp = array();
-                                        $indV = $_2key + $index;
-                                        array_push($temp, array($indV => $value));
-                                        $qty = $qty + $value;
-                                        $sql = $this->ask_mysqli->updateINC(array("`" . $jsonData["basic"]["drawid"] . "`" => $value), "`" . $_2key . "`") . $this->ask_mysqli->whereSingle(array("number" => sprintf("%02d", $index))) . "\n";
-                                        $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
-                                    } else {
-                                        $indV = $_2key + $index;
-                                        array_push($temp, array($indV => $value));
-                                        $qty = $qty + $value;
-                                        //update query
-                                        $sql = $this->ask_mysqli->updateINC(array("`" . $jsonData["basic"]["drawid"] . "`" => $value), "`" . $_2key . "`") . $this->ask_mysqli->whereSingle(array("number" => sprintf("%02d", $index))) . "\n";
-                                        $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
-                                        //echo $indV . "=" . $value . "\n";
-                                        $limit++;
-                                    }
-                                }
-                            }
-                            //print_r($valArray);
-                        }
-                    }
-                }
-                //die;
-                $final = array(
+                //add singel invoice here
+                $discountAmount = (float) ($jsonData["basic"]["totalamt"] * $row["comission"]);
+                $unicid = uniqid("ask");
+                $insertSingleInvoice = array(
                     "own" => $jsonData["basic"]["userid"],
-                    "totalpoint" => (string) $qty,
-                    "amount" => (string) ($qty * $perPoint),
+                    "game" => $unicid,
+                    "point" => json_encode($jsonData["data"]),
+                    "amount" => $jsonData["basic"]["totalamt"],
+                    "enterydate" => date("Y-m-d"),
+                    "comission" => $row["comission"],
+                    "comissionAMT" => $discountAmount,
+                    "totalpoint" => $jsonData["basic"]["totalqty"],
                     "enterydate" => (string) date("Y-m-d"),
                     "winstatus" => (string) 0,
                     "winamt" => (string) 0,
@@ -120,40 +79,24 @@ class invoice extends CAaskController {
                     "ip" => $jsonData["basic"]["ip"],
                     "gametime" => $jsonData["basic"]["start"],
                     "gameendtime" => $jsonData["basic"]["end"],
-                    "gametimeid" => $jsonData["basic"]["drawid"],
-                    "game" => uniqid("ask"),
-                    "point" => $temp
+                    "gametimeid" => $jsonData["basic"]["drawid"]
                 );
-                array_push($finalArray, $final);
+                $sql = $this->ask_mysqli->insert("entry", $insertSingleInvoice);
+                $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
+                $last_id = $this->adminDB[$_SESSION["db_1"]]->insert_id;
+                $principal_amount = (float) ($jsonData["basic"]["totalamt"] - $discountAmount);
+                $s = $this->ask_mysqli->_updateINC(array("balance" => "balance-" . $principal_amount), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $jsonData["basic"]["userid"]));
+                $this->adminDB[$_SESSION["db_1"]]->query($s) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
+                $sql = $this->ask_mysqli->insert("usertranscation", array("gid" => 1, "drawid" => $insertSingleInvoice["gametimeid"], "userid" => $insertSingleInvoice["own"], "invoiceno" => $insertSingleInvoice["game"], "netamt" => $insertSingleInvoice["amount"], "discount" => $insertSingleInvoice["comission"], "discountamt" => $insertSingleInvoice["comissionAMT"], "total" => $principal_amount, "ip" => $_SERVER["REMOTE_ADDR"]));
+                $this->adminDB[$_SESSION["db_1"]]->query($sql) != 1 ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
+                //print_r($insertSingleInvoice);
                 if (empty($error)) {
-
-                    foreach ($finalArray as $key => $valArray) {
-                        $valArray["point"] = json_encode($valArray["point"]);
-                        $valArray["comission"] = $row["comission"];
-                        $amt = $valArray["amount"];
-                        $dmt = (float) ($amt * $row["comission"]);
-                        $valArray["comissionAMT"] = $dmt;
-                        $sql = $this->ask_mysqli->insert("entry", $valArray);
-                        $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
-                        
-
-                        $principal_amount = (float) ($valArray["amount"] - $dmt);
-                        $s = $this->ask_mysqli->_updateINC(array("balance" => "balance-" . $principal_amount), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $valArray["own"]));
-                        $this->adminDB[$_SESSION["db_1"]]->query($s) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
-                        $sql = $this->ask_mysqli->insert("usertranscation", array("gid" => 1, "drawid" => $valArray["gametimeid"], "userid" => $valArray["own"], "invoiceno" => $valArray["game"], "netamt" => $valArray["amount"], "discount" => $row["comission"], "discountamt" => $dmt, "total" => $principal_amount, "ip" => $_SERVER["REMOTE_ADDR"]));
-                        $this->adminDB[$_SESSION["db_1"]]->query($sql) != 1 ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
-                    }
-                }
-                $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("gametime", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $jsonData["basic"]["drawid"])));
-                $row = $result->fetch_assoc();
-
-                if (empty($error) && $row["status"] === "0") {
-                    $this->adminDB[$_SESSION["db_1"]]->commit();
-                    echo json_encode(array("status" => "1", "msg" => "Success", "print" => $finalArray));
+                    $this->splitPrintData($last_id);
+                    //$this->adminDB[$_SESSION["db_1"]]->commit();
+                    
                 } else {
                     $this->adminDB[$_SESSION["db_1"]]->rollback();
-                    array_push($error, $this->ask_mysqli->select("gametime", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $jsonData["basic"]["drawid"])));
-                    echo json_encode(array("status" => "0", "msg" => "Timeout", "print" => $error));
+                    echo json_encode(array("status" => "0", "msg" => "Invalid User", "print" => $error));
                 }
             } else {
                 echo json_encode(array("status" => "0", "msg" => "Insuficent Balance", "print" => $error));
@@ -179,6 +122,111 @@ class invoice extends CAaskController {
     public function distory() {
         parent::distory();
         return;
+    }
+
+    function splitPrintData($last_id) {
+        try {
+            $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $last_id));
+            $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
+            if ($row = $result->fetch_assoc()) {
+                $myPoint = json_decode($row["point"], true);
+                $finalArray = array();
+                $temp = array();
+                foreach ($myPoint as $Key => $Array) {
+                    foreach ($Array as $_1key => $_1array) {//1000-1900
+                        foreach ($_1array as $_2key => $_2array) {//1800
+                            //echo $_2key;
+                            foreach ($_2array as $in => $valArray) {//1800
+                                foreach ($valArray as $index => $value) {//point
+                                    //print_r($value);echo "\n";
+                                    $t = $t + $value;
+                                    if ($limit == 56) {
+                                        $final = array(
+                                            "own" => $row["own"],
+                                            "totalpoint" => (string) $row["totalpoint"],
+                                            "amount" => (string) $row["amount"],
+                                            "enterydate" => (string) $row["enterydate"],
+                                            "winstatus" => (string) 0,
+                                            "winamt" => (string) 0,
+                                            "claimstatus" => (string) 0,
+                                            "ip" => $row["ip"],
+                                            "gametime" => $row["gametime"],
+                                            "gameendtime" => $row["gameendtime"],
+                                            "gametimeid" => $row["gametimeid"],
+                                            "game" => $row["game"],
+                                            "point" => $temp
+                                        );
+                                        array_push($finalArray, $final);
+                                        $limit = 1;
+                                        $qty = 0;
+                                        $temp = array();
+                                        $indV = $_2key + $index;
+                                        array_push($temp, array($indV => $value));
+                                        $qty = $qty + $value;
+                                        $sql = $this->ask_mysqli->updateINC(array("`" . $row["gametimeid"] . "`" => $value), "`" . $_2key . "`") . $this->ask_mysqli->whereSingle(array("number" => sprintf("%02d", $index))) . "\n";
+                                        $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
+                                    } else {
+                                        $indV = $_2key + $index;
+                                        array_push($temp, array($indV => $value));
+                                        $qty = $qty + $value;
+                                        //update query
+                                        $sql = $this->ask_mysqli->updateINC(array("`" . $row["gametimeid"] . "`" => $value), "`" . $_2key . "`") . $this->ask_mysqli->whereSingle(array("number" => sprintf("%02d", $index))) . "\n";
+                                        $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
+                                        //echo $indV . "=" . $value . "\n";
+                                        $limit++;
+                                    }
+                                }
+                            }
+                            //print_r($valArray);
+                        }
+                    }
+                }
+                //die;
+                $final = array(
+                    "own" => $row["own"],
+                    "totalpoint" => (string) $row["totalpoint"],
+                    "amount" => (string) $row["amount"],
+                    "enterydate" => (string) $row["enterydate"],
+                    "winstatus" => (string) 0,
+                    "winamt" => (string) 0,
+                    "claimstatus" => (string) 0,
+                    "ip" => $row["ip"],
+                    "gametime" => $row["gametime"],
+                    "gameendtime" => $row["gameendtime"],
+                    "gametimeid" => $row["gametimeid"],
+                    "game" => $row["game"],
+                    "point" => $temp
+                );
+                array_push($finalArray, $final);
+                if (empty($error)) {
+
+                    foreach ($finalArray as $key => $valArray) {
+                        $valArray["point"] = json_encode($valArray["point"]);
+                        $valArray["comission"] = $row["comission"];
+                        $amt = $valArray["amount"];
+                        $dmt = (float) ($amt * $row["comission"]);
+                        $valArray["comissionAMT"] = $dmt;
+                        $sql = $this->ask_mysqli->insert("subentry", $valArray);
+                        $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
+                    }
+                }
+                $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("gametime", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $row["gametimeid"])));
+                $row = $result->fetch_assoc();
+
+                if (empty($error) && $row["status"] === "0") {
+                    $this->adminDB[$_SESSION["db_1"]]->commit();
+                    echo json_encode(array("status" => "1", "msg" => "Success", "print" => $finalArray));
+                } else {
+                    $this->adminDB[$_SESSION["db_1"]]->rollback();
+                    array_push($error, $this->ask_mysqli->select("gametime", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $jsonData["basic"]["drawid"])));
+                    echo json_encode(array("status" => "0", "msg" => "Timeout", "print" => $error));
+                }
+            } else {
+                echo json_encode(array("status" => "0", "msg" => "Timeout Error on insert", "print" => $error));
+            }
+        } catch (Exception $ex) {
+            
+        }
     }
 
 //    public function loadTable() {

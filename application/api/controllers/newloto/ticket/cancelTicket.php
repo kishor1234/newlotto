@@ -51,18 +51,26 @@ class cancelTicket extends CAaskController {
         $resultArray = array();
         if ($row = $result->fetch_assoc()) {
             $balance = $row["amount"] - $row["comissionAMT"];
-            $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->updateINC(array("balance" =>  $balance), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $request["own"]))) != 1 ? array_push($error, "Update Balance Error ".$this->adminDB[$_SESSION["db_1"]]->error) : true;
-            $point = json_decode($row["point"], true);
-            foreach ($point as $key => $val) {
-                foreach ($val as $index => $value) {
-                    $inValue = ($index % 100);
-                    $inTable = $index - $inValue;
+            $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->updateINC(array("balance" => $balance), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $request["own"]))) != 1 ? array_push($error, "Update Balance Error " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
+            //point load remove
+            $loadQuery = $this->ask_mysqli->select("subentry", $_SESSION["db_1"]) . $this->ask_mysqli->where($request, "AND");
+            $result2 = $this->adminDB[$_SESSION["db_1"]]->query($loadQuery);
+            while ($row2 = $result2->fetch_assoc()) {
+                $point = json_decode($row2["point"], true);
+                foreach ($point as $key => $val) {
+                    foreach ($val as $index => $value) {
+                        $inValue = ($index % 100);
+                        $inTable = $index - $inValue;
 
-                    $qq = $this->ask_mysqli->updateDNC(array("`" . $request["gametimeid"] . "`" => $value), "`{$inTable}`") . $this->ask_mysqli->whereSingle(array("number" => sprintf("%02d", $inValue)));
-                    $this->adminDB[$_SESSION["db_1"]]->query($qq);
+                        $qq = $this->ask_mysqli->updateDNC(array("`" . $request["gametimeid"] . "`" => $value), "`{$inTable}`") . $this->ask_mysqli->whereSingle(array("number" => sprintf("%02d", $inValue)));
+                        $this->adminDB[$_SESSION["db_1"]]->query($qq);
+                    }
                 }
+                $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->delete("subentry") . $this->ask_mysqli->whereSingle(array("id" => $row2["id"]))) != 1 ? array_push($error, "Unable to delte") : true;
             }
+//end
             $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->delete("entry") . $this->ask_mysqli->whereSingle(array("game" => $request["game"]))) != 1 ? array_push($error, "Unable to delte") : true;
+
             $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->delete("usertranscation") . $this->ask_mysqli->whereSingle(array("invoiceno" => $request["game"]))) != 1 ? array_push($error, "Unable to delte") : true;
 
             if (empty($error)) {
@@ -71,7 +79,7 @@ class cancelTicket extends CAaskController {
             } else {
                 //echo $this->printMessage("Invalid Entry ", "danger");
                 $this->adminDB[$_SESSION["db_1"]]->rollback();
-                echo json_encode(array("status" => "0", "message" => "Ticket cannot be canceled, Please contact to Admin","error"=>$error));
+                echo json_encode(array("status" => "0", "message" => "Ticket cannot be canceled, Please contact to Admin", "error" => $error));
             }
         } else {
             echo json_encode(array("status" => "0", "message" => "Ticket cannot be canceled"));
