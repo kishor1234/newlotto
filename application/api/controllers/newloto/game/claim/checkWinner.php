@@ -47,13 +47,22 @@ class checkWinner extends CAaskController {
             $final = array();
             //$_POST['id'] = 'ask5ed87e5c59b6d';
             //$_POST['userid'] = '20200431';
-            $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $_POST["id"], "own" => $_POST["userid"]), "AND");
+            $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $_POST["id"], "trno" => $_POST["id"]), "OR") . " AND own='{$_POST["userid"]}'";
+            
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
-            $ra=180;
+            $ra = 180;
             if ($row = $result->fetch_assoc()) {
+                if (strtotime(date("H:i:s")) < strtotime($row["gameendtime"])) {
+                    $final = array(
+                        "status" => "0",
+                        "message" => "Draw is no over yet!"
+                    );
+                    echo json_encode($final);
+                    die;
+                }
                 $claimStatis = $row["claimstatus"];
-
-                $sql = $this->ask_mysqli->select("subentry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $_POST["id"], "own" => $_POST["userid"]), "AND");
+                $ClaimTime = $row["ClaimTime"];
+                $sql = $this->ask_mysqli->select("subentry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $row["game"], "own" => $_POST["userid"]), "AND");
                 $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
                 $sum = 0;
                 $winArray = array();
@@ -96,9 +105,10 @@ class checkWinner extends CAaskController {
                 }
                 //echo $sum;die;
                 if ($claimStatis === "1") {
+                    $pri = $sum * $ra;
                     $final = array(
                         "status" => "0",
-                        "message" => "You Already Claim for this invoice !",
+                        "message" => "Ticket already claimed \n Prize Amount:{$pri} \n Claim date : {$ClaimTime}",
                         "amount" => (string) ($sum * $ra),
                         "own" => $_POST["userid"],
                         "drawid" => $game_id,
@@ -108,7 +118,7 @@ class checkWinner extends CAaskController {
 
                     $final = array(
                         "status" => "0",
-                        "message" => "Better Luck Nex Time",
+                        "message" => "Ticket Claim Successfully NO Win Amount \n Prize Amount :0 \n Claim date : {$ClaimTime}",
                         "amount" => (string) ($sum * $ra),
                         "own" => $_POST["userid"],
                         "drawid" => $game_id,
