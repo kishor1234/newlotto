@@ -55,7 +55,7 @@ class checkWinner extends CAaskController {
                 if (strtotime(date("H:i:s")) < strtotime($row["gameendtime"])) {
                     $final = array(
                         "status" => "0",
-                        "message" => "Draw is no over yet!"
+                        "message" => "Draw is not over yet!"
                     );
                     echo json_encode($final);
                     die;
@@ -108,7 +108,7 @@ class checkWinner extends CAaskController {
                     $pri = $sum * $ra;
                     $final = array(
                         "status" => "0",
-                        "message" => "Ticket already claimed \n Prize Amount:{$pri} \n Claim date : {$ClaimTime}",
+                        "message" => "Ticket already claimed \nPrize Amount:{$pri} \nClaim date : {$ClaimTime}",
                         "amount" => (string) ($sum * $ra),
                         "own" => $_POST["userid"],
                         "drawid" => $game_id,
@@ -118,7 +118,7 @@ class checkWinner extends CAaskController {
 
                     $final = array(
                         "status" => "0",
-                        "message" => "Ticket Claim Successfully NO Win Amount \n Prize Amount :0 \n Claim date : {$ClaimTime}",
+                        "message" => "No winning ticket",
                         "amount" => (string) ($sum * $ra),
                         "own" => $_POST["userid"],
                         "drawid" => $game_id,
