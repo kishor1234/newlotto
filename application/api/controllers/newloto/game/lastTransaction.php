@@ -46,7 +46,7 @@ class lastTransaction extends CAaskController {
         $result=$this->adminDB[$_SESSION["db_1"]]->query($sql);
         if($row=$result->fetch_assoc())
         {
-            echo json_encode(array("last"=>$row["id"],"lastamt"=>$row["amount"]));
+            echo json_encode(array("last"=>$row["trno"],"lastamt"=>$row["amount"]));
         }else{
             echo json_encode(array("last"=>"null","lastamt"=>"null"));
         }

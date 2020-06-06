@@ -35,7 +35,8 @@
                                         <input type="text" id="gameid" list="did" required onkeyup="getDrawLoto('#gameid', '#did')" name="gameid" class="form-control">
                                         <datalist id="did">
                                             <?php
-                                            $result = $main->adminDB[$_SESSION["db_1"]]->query($main->ask_mysqli->select("gametime", $_SESSION["db_1"]));
+                                            $sql = $main->ask_mysqli->select("gametime", $_SESSION["db_1"]) . $main->ask_mysqli->whereSinglelessthanequal(array("stime" => date("H:i:s"))) . $main->ask_mysqli->orderBy("DESC", "id") . $main->ask_mysqli->limitWithOutOffset(1);
+                                            $result = $main->adminDB[$_SESSION["db_1"]]->query($sql);
                                             while ($row = $result->fetch_assoc()) {
                                                 echo"<option>" . $row["id"] . "|" . $row["stime"] . "|" . $row["etime"] . "" . "</option>";
                                             }

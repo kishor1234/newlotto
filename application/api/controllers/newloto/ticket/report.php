@@ -56,17 +56,17 @@ class report extends CAaskController {
                 "game" => "RajLaxmi",
                 "ticket" => $row["invoiceno"],
                 "drawid" => $row["drawid"],
-                "netPoint" => $row["netamt"],
-                "discountPer" => $row["discount"],
-                "discountPoint" => $row["discountamt"],
-                "finalPoint" => $row["total"],
+                "netPoint" => $row["netamt"],//selll
+                "discountPer" => $row["discount"],//per
+                "discountPoint" => $row["discountamt"],//profit
+                "finalPoint" => $row["total"],//after profit move
                 "winAmount" => $tc,
                 "netPayble" => $nc,
                 "date" => $row["on_create"]
             );
             array_push($data, $temp);
             $ntotal = $ntotal + (float) $row["netamt"];
-            $ftotal = $ftotal + (float) $row["total"];
+            $ftotal = $ftotal + (float) $row["discountamt"];
             $fnpay = $fnpay + (float) $nc;
             $wamt = $wamt + (float) $tc;
             $i++;

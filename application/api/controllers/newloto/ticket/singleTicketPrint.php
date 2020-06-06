@@ -66,7 +66,7 @@ class singleTicketPrint extends CAaskController {
                     }
                 }
             }
-            echo json_encode(array("status" => "1", "msg" => "This is to certify that,the Cash Memo/Invoice (T. No.{$row["game"]} of Rs. {$row["amount"]}) colud not be printed,\n I hereby to be required reprinting the same. I indentify for any misuse of duplicate Cash Memo/Invoice.", "point" => $temp));
+            echo json_encode(array("status" => "1", "msg" => "This is to certify that,the Cash Memo/Invoice (T. No.{$row["trno"]} of Rs. {$row["amount"]}) colud not be printed,\n I hereby to be required reprinting the same. I indentify for any misuse of duplicate Cash Memo/Invoice.", "point" => $temp));
         } else {
             echo json_encode(array("status" => "0", "msg" => "Invalid Tickets"));
         }

@@ -62,7 +62,7 @@ class invoice extends CAaskController {
                 $this->adminDB[$_SESSION["db_1"]]->autocommit(FALSE);
                 //add singel invoice here
                 $discountAmount = (float) ($jsonData["basic"]["totalamt"] * $row["comission"]);
-                $unicid = uniqid("ask");
+                $unicid = uniqid();
                 $insertSingleInvoice = array(
                     "own" => $jsonData["basic"]["userid"],
                     "game" => $unicid,
@@ -93,7 +93,6 @@ class invoice extends CAaskController {
                 if (empty($error)) {
                     $this->splitPrintData($last_id);
                     //$this->adminDB[$_SESSION["db_1"]]->commit();
-                    
                 } else {
                     $this->adminDB[$_SESSION["db_1"]]->rollback();
                     echo json_encode(array("status" => "0", "msg" => "Invalid User", "print" => $error));
@@ -199,10 +198,15 @@ class invoice extends CAaskController {
                 );
                 array_push($finalArray, $final);
                 if (empty($error)) {
+                    $trno = 152671 + $last_id;
+                    $sql = $this->ask_mysqli->update(array("trno" => $trno), "entry") . $this->ask_mysqli->whereSingle(array("id" => $last_id));
+                    $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
+
 
                     foreach ($finalArray as $key => $valArray) {
                         $valArray["point"] = json_encode($valArray["point"]);
                         $valArray["comission"] = $row["comission"];
+                        $valArray["trno"] = $trno;
                         $amt = $valArray["amount"];
                         $dmt = (float) ($amt * $row["comission"]);
                         $valArray["comissionAMT"] = $dmt;
@@ -212,7 +216,6 @@ class invoice extends CAaskController {
                 }
                 $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("gametime", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $row["gametimeid"])));
                 $row = $result->fetch_assoc();
-
                 if (empty($error) && $row["status"] === "0") {
                     $this->adminDB[$_SESSION["db_1"]]->commit();
                     echo json_encode(array("status" => "1", "msg" => "Success", "print" => $finalArray));

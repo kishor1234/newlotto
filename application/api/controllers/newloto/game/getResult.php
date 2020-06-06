@@ -54,7 +54,7 @@ class getResult extends CAaskController {
         parent::execute();
         
         $data = array();
-        $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("winnumber", $_SESSION["db_1"]).$this->ask_mysqli->where($_POST,"AND"));
+        $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("winnumber", $_SESSION["db_1"]).$this->ask_mysqli->where($_POST,"AND")).$this->ask_mysqli->orderBy("ASC", "gameid");
         
         while ($row = $result->fetch_assoc()) {
             

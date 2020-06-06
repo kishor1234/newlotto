@@ -29,7 +29,7 @@ class C_GetDrawLoadLoto extends CAaskController {
         try {
             $da = array();
             $ss = explode("-", $_REQUEST["series"]);
-            for ($i = $ss[0]; $i < $ss[1]; $i = $i + 100) {
+            for ($i = $ss[0]; $i <=$ss[1]; $i = $i + 100) {
                 $sql = "SELECT number,`" . $_REQUEST["id"] . "` FROM  `{$i}`";
                 $m = "<th>" . $i . "<th>";
                 $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
