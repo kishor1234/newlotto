@@ -43,7 +43,7 @@ class result extends CAaskController {
             $postdata = file_get_contents("php://input");
             $_POST = json_decode($postdata, true);
 
-            $sql = $this->ask_mysqli->select("winnumber", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("series" => $_POST["series"], "gdate" => $_POST["gdate"]), "AND");
+            $sql = $this->ask_mysqli->select("winnumber", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("series" => $_POST["series"], "gdate" => $_POST["gdate"]), "AND").$this->ask_mysqli->orderBy("ASC","gameid");
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
             $myResutl = array();
             while ($row = $result->fetch_assoc()) {

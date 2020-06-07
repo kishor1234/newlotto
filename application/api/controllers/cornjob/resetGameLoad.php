@@ -51,7 +51,9 @@ class resetGameLoad extends CAaskController {
                 $series = explode("-", $row["series"]);
                 $this->porcessSeries($series,$count);
                 $this->adminDB[$_SESSION["db_1"]]->query("UPDATE `gametime` SET `status` = '0'");
+                 $this->adminDB[$_SESSION["db_1"]]->query("UPDATE `enduser` SET `climit` = '5'");
             }
+            //UPDATE `enduser` SET `climit` = '5'
         } catch (Exception $ex) {
             
         }
