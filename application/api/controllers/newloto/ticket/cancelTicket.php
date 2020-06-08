@@ -48,10 +48,10 @@ class cancelTicket extends CAaskController {
 //        data.put("own", own);
 //        data.put("utrno", utrno);
         $this->adminDB[$_SESSION["db_1"]]->autocommit(false);
-        $sql = $this->ask_mysqli->select("usertranscation", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("trno" => $_POST["utrno"]));
+        echo $sql = $this->ask_mysqli->select("usertranscation", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("trno" => $_POST["utrno"]));
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
         $row = $result->fetch_assoc();
-        $balance = $row["netamt"];
+        $balance = $row["total"];
         $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->updateINC(array("balance" => $balance), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $row["userid"]))) != 1 ? array_push($error, "Update Balance Error " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
 //after balance update
         //1=active 0=deactive

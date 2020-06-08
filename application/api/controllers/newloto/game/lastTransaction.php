@@ -42,11 +42,11 @@ class lastTransaction extends CAaskController {
         parent::execute();
         $postdata = file_get_contents("php://input");
         $request = json_decode($postdata, true);
-        $sql=$this->ask_mysqli->select("entry",$_SESSION["db_1"]).$this->ask_mysqli->whereSingle(array("own"=>$request["userid"])).$this->ask_mysqli->orderBy("DESC","id");
+        $sql=$this->ask_mysqli->select("usertranscation",$_SESSION["db_1"]).$this->ask_mysqli->whereSingle(array("userid"=>$request["userid"])).$this->ask_mysqli->orderBy("DESC","id");
         $result=$this->adminDB[$_SESSION["db_1"]]->query($sql);
         if($row=$result->fetch_assoc())
         {
-            echo json_encode(array("last"=>$row["trno"],"lastamt"=>$row["amount"]));
+            echo json_encode(array("last"=>$row["trno"],"lastamt"=>$row["netamt"]));
         }else{
             echo json_encode(array("last"=>"null","lastamt"=>"null"));
         }

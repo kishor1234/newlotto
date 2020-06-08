@@ -53,16 +53,27 @@ class getCancelLimit extends CAaskController {
             $sql = $this->ask_mysqli->select("usertranscation", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("userid" => $_POST["userid"])) . $this->ask_mysqli->orderBy("DESC", "id") . $this->ask_mysqli->limitWithoutOffset(1);
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
             $row = $result->fetch_assoc();
+            $drid = $row["drawid"];
             if ($row["active"] != 0) {
+                $trno = $row["trno"];
+
                 $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("utrno" => $row["trno"])) . $this->ask_mysqli->orderBy("DESC", "id") . $this->ask_mysqli->limitWithoutOffset(1);
                 $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
                 $row = $result->fetch_assoc();
+
                 if ($row["gametimeid"] == $_POST["drawid"]) {
                     $fnl = array(
                         "status" => "1",
                         "message" => "Success",
                         "limit" => $remian_limit,
-                        "utrno" => $row["trno"]
+                        "utrno" => $trno
+                    );
+                } else if (empty($drid)) {
+                    $fnl = array(
+                        "status" => "1",
+                        "message" => "Success Advacne Draw",
+                        "limit" => $remian_limit,
+                        "utrno" => $trno
                     );
                 } else {
                     $fnl = array(
