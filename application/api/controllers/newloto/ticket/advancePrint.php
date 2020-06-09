@@ -47,14 +47,14 @@ class advancePrint extends CAaskController {
             case "entry":
                 $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("utrno" => $request["utrno"], "own" => $request["own"]), "AND");
                 $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
-                $temp=array();
+                $temp = array();
                 while ($row = $result->fetch_assoc()) {
-                    array_push($temp, array("game"=>$row["game"]));
+                    array_push($temp, array("game" => $row["game"]));
                 }
                 echo json_encode($temp);
                 break;
             case "subentry":
-               $this->printTicket();
+                $this->printTicket();
                 break;
             default :
                 break;
@@ -150,7 +150,7 @@ class advancePrint extends CAaskController {
                     }
                 }
 
-                echo json_encode(array("status" => "1", "msg" => "Success","advance"=>"true","print" => $finalArray));
+                echo json_encode(array("trno" => $request["utrno"], "status" => "1", "msg" => "Success", "advance" => "true", "print" => $finalArray));
             } else {
                 echo json_encode(array("status" => "0", "msg" => "Timeout Error on insert", "print" => $error));
             }

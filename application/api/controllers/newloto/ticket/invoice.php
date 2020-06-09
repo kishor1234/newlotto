@@ -68,11 +68,11 @@ class invoice extends CAaskController {
                     $principal_amount = (float) ($jsonData["main"]["adtotalamt"] - $discountAmount);
                     $s = $this->ask_mysqli->_updateINC(array("balance" => "balance-" . $principal_amount), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $jsonData["main"]["userid"]));
                     $this->adminDB[$_SESSION["db_1"]]->query($s) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
-                    $sql = $this->ask_mysqli->insert("usertranscation", array("drawid" => $jsonData["main"]["drawid"],"enterydate"=>date("Y-m-d"),"gid" => 1, "userid" => $jsonData["main"]["userid"], "netamt" => $jsonData["main"]["adtotalamt"], "discount" => $row["comission"], "discountamt" => $discountAmount, "total" => $principal_amount, "ip" => $_SERVER["REMOTE_ADDR"]));
+                    $sql = $this->ask_mysqli->insert("usertranscation", array("drawid" => $jsonData["main"]["drawid"], "enterydate" => date("Y-m-d"), "gid" => 1, "userid" => $jsonData["main"]["userid"], "netamt" => $jsonData["main"]["adtotalamt"], "discount" => $row["comission"], "discountamt" => $discountAmount, "total" => $principal_amount, "ip" => $_SERVER["REMOTE_ADDR"]));
                     $this->adminDB[$_SESSION["db_1"]]->query($sql) != 1 ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
                     $transaction_id = $this->adminDB[$_SESSION["db_1"]]->insert_id;
                     $unilast = 9536254 + $transaction_id;
-                    $s = $this->ask_mysqli->update(array("trno" => $unilast,"invoiceno" => $unilast), "usertranscation") . $this->ask_mysqli->whereSingle(array("id" => $transaction_id));
+                    $s = $this->ask_mysqli->update(array("trno" => $unilast, "invoiceno" => $unilast), "usertranscation") . $this->ask_mysqli->whereSingle(array("id" => $transaction_id));
                     $this->adminDB[$_SESSION["db_1"]]->query($s) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
 
                     foreach ($jsonData as $key => $val) {
@@ -82,7 +82,7 @@ class invoice extends CAaskController {
 
                             $unicid = uniqid();
                             $insertSingleInvoice = array(
-                                "utrno"=>$unilast,
+                                "utrno" => $unilast,
                                 "own" => $val["basic"]["userid"],
                                 "game" => $unicid,
                                 "point" => json_encode($val["data"]),
@@ -118,8 +118,8 @@ class invoice extends CAaskController {
                     if (empty($error)) {
                         //$this->splitPrintData($last_id);
                         $this->adminDB[$_SESSION["db_1"]]->commit();
-                        $this->adminDB[$_SESSION["db_1"]]->rollback();
-                        echo json_encode(array("status" => "1", "msg" => "Success","advance"=>"true", "print" => (string)$unilast));
+                        //$this->adminDB[$_SESSION["db_1"]]->rollback();
+                        echo json_encode(array("trno" => $unilast,"status" => "1", "msg" => "Success", "advance" => "true", "print" => (string) $unilast));
                     } else {
                         $this->adminDB[$_SESSION["db_1"]]->rollback();
                         echo json_encode(array("status" => "0", "msg" => "Invalid User", "print" => $error));
@@ -164,11 +164,11 @@ class invoice extends CAaskController {
                     $principal_amount = (float) ($jsonData["main"]["totalamt"] - $discountAmount);
                     $s = $this->ask_mysqli->_updateINC(array("balance" => "balance-" . $principal_amount), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $jsonData["main"]["userid"]));
                     $this->adminDB[$_SESSION["db_1"]]->query($s) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
-                    $sql = $this->ask_mysqli->insert("usertranscation", array("drawid" => $jsonData["main"]["drawid"],"enterydate"=>date("Y-m-d"),"gid" => 1, "drawid" => $insertSingleInvoice["gametimeid"], "userid" => $insertSingleInvoice["own"], "invoiceno" => $insertSingleInvoice["game"], "netamt" => $insertSingleInvoice["amount"], "discount" => $insertSingleInvoice["comission"], "discountamt" => $insertSingleInvoice["comissionAMT"], "total" => $principal_amount, "ip" => $_SERVER["REMOTE_ADDR"]));
+                    $sql = $this->ask_mysqli->insert("usertranscation", array("drawid" => $jsonData["main"]["drawid"], "enterydate" => date("Y-m-d"), "gid" => 1, "drawid" => $insertSingleInvoice["gametimeid"], "userid" => $insertSingleInvoice["own"], "invoiceno" => $insertSingleInvoice["game"], "netamt" => $insertSingleInvoice["amount"], "discount" => $insertSingleInvoice["comission"], "discountamt" => $insertSingleInvoice["comissionAMT"], "total" => $principal_amount, "ip" => $_SERVER["REMOTE_ADDR"]));
                     $this->adminDB[$_SESSION["db_1"]]->query($sql) != 1 ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
                     $transaction_id = $this->adminDB[$_SESSION["db_1"]]->insert_id;
                     $last = 9536254 + $transaction_id;
-                    $s = $this->ask_mysqli->update(array("trno" => $last,"invoiceno"=>$last), "usertranscation") . $this->ask_mysqli->whereSingle(array("id" => $transaction_id));
+                    $s = $this->ask_mysqli->update(array("trno" => $last, "invoiceno" => $last), "usertranscation") . $this->ask_mysqli->whereSingle(array("id" => $transaction_id));
                     $this->adminDB[$_SESSION["db_1"]]->query($s) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
 
                     //insert main ticket using $transaction_id 
@@ -177,12 +177,13 @@ class invoice extends CAaskController {
                     $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
                     $last_id = $this->adminDB[$_SESSION["db_1"]]->insert_id;
                     //print_r($insertSingleInvoice);
+                    $utrno=$last;
                     if (empty($error)) {
                         $this->splitPrintData($last_id);
                         //$this->adminDB[$_SESSION["db_1"]]->commit();
                     } else {
                         $this->adminDB[$_SESSION["db_1"]]->rollback();
-                        echo json_encode(array("status" => "0", "msg" => "Invalid User", "print" => $error));
+                        echo json_encode(array("trno" => $utrno, "status" => "0", "msg" => "Invalid User", "print" => $error));
                     }
                 } else {
                     echo json_encode(array("status" => "0", "msg" => "Insuficent Balance", "print" => $error));
@@ -422,7 +423,7 @@ class invoice extends CAaskController {
                 $row = $result->fetch_assoc();
                 if (empty($error) && $row["status"] === "0") {
                     $this->adminDB[$_SESSION["db_1"]]->commit();
-                    echo json_encode(array("status" => "1", "msg" => "Success","advance"=>"false", "print" => $finalArray));
+                    echo json_encode(array("status" => "1", "msg" => "Success", "advance" => "false", "print" => $finalArray));
                 } else {
                     $this->adminDB[$_SESSION["db_1"]]->rollback();
                     array_push($error, $this->ask_mysqli->select("gametime", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $jsonData["basic"]["drawid"])));
