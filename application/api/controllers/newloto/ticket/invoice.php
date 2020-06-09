@@ -179,11 +179,11 @@ class invoice extends CAaskController {
                     //print_r($insertSingleInvoice);
                     $utrno=$last;
                     if (empty($error)) {
-                        $this->splitPrintData($last_id);
+                        $this->splitPrintData($last_id,$utrno);
                         //$this->adminDB[$_SESSION["db_1"]]->commit();
                     } else {
                         $this->adminDB[$_SESSION["db_1"]]->rollback();
-                        echo json_encode(array("trno" => $utrno, "status" => "0", "msg" => "Invalid User", "print" => $error));
+                        echo json_encode(array("trno" => (String)$utrno, "status" => "0", "msg" => "Invalid User", "print" => $error));
                     }
                 } else {
                     echo json_encode(array("status" => "0", "msg" => "Insuficent Balance", "print" => $error));
@@ -328,7 +328,7 @@ class invoice extends CAaskController {
         }
     }
 
-    function splitPrintData($last_id) {
+    function splitPrintData($last_id,$utrno) {
         try {
             $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $last_id));
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
@@ -423,7 +423,7 @@ class invoice extends CAaskController {
                 $row = $result->fetch_assoc();
                 if (empty($error) && $row["status"] === "0") {
                     $this->adminDB[$_SESSION["db_1"]]->commit();
-                    echo json_encode(array("status" => "1", "msg" => "Success", "advance" => "false", "print" => $finalArray));
+                    echo json_encode(array("trno"=>(string)$utrno,"status" => "1", "msg" => "Success", "advance" => "false", "print" => $finalArray));
                 } else {
                     $this->adminDB[$_SESSION["db_1"]]->rollback();
                     array_push($error, $this->ask_mysqli->select("gametime", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $jsonData["basic"]["drawid"])));
