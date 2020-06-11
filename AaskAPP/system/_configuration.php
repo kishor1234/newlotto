@@ -30,7 +30,7 @@ class _configuration {
         "host" => "localhost",
         "port" => "3306",
         "username" => "root",
-        "password" => "aaskSoft@123",
+        "password" => "root@123",
         "database" => "newloto",
         "socket" => "",
         "single" => true, //if you user multiple database then use singel=>false and pass master db configuration

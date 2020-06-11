@@ -45,6 +45,7 @@ class gamelogin extends CAaskController {
         $postdata = file_get_contents("php://input");
         $request = json_decode($postdata, true);
         $data = $request;
+        $data["is_active"]="1";
         unset($data["device"]);
         $sql = $this->ask_mysqli->select("enduser", $_SESSION["db_1"]) . $this->ask_mysqli->where($data, "AND");
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql); //!=true?array_push($error, $this->adminDB[$_SESSION["db_1"]]->error):true;
