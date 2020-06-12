@@ -58,7 +58,7 @@ class report extends CAaskController {
             while ($row2 = $result2->fetch_assoc()) {
                 $game = $row2["game"];
                 $drid = $row2["gametimeid"];
-                $tc = $tc + $row["winamt"];
+                $tc = $tc + $row2["winamt"];
             }
             $nc = $row["netamt"] - $row["discountamt"] - $tc;
             $temp = array(

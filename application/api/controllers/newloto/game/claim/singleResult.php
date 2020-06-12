@@ -16,7 +16,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 //die(APPLICATION);
 //require_once getcwd() . '/' . APPLICATION . "/controllers/Crout.php";
 require_once controller;
-header('Content-Type: application/json');
+
+//header('Content-Type: application/json');
 
 class singleResult extends CAaskController {
 
@@ -41,6 +42,7 @@ class singleResult extends CAaskController {
 
     public function execute() {
         parent::execute();
+
         $postdata = file_get_contents("php://input");
         $request = json_decode($postdata, true);
         $data = $request;
@@ -73,17 +75,23 @@ class singleResult extends CAaskController {
     }
 
     public function AllResult($data) {
-        $gid=0;
+
+        $gid = 0;
+
         if ($data["drawid"] == 0) {
-           
             echo json_encode(array("status" => "0", "message" => "Draw avaliable after 10:15"));
             die;
-        } elseif ($data["drawid"] == 49) {
+        } elseif ($data["drawid"] == 49 && strtotime("22:15:00") < strtotime(date("H:i:s"))) {
             $gid = $data["drawid"];
         } else {
             $gid = $data["drawid"] - 1;
         }
-        $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->selectSpacific(array("gameetime", "series", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), "winnumber") . $this->ask_mysqli->where(array("gdate" => date("Y-m-d"), "gameid" => $gid),"AND") . $this->ask_mysqli->orderBy("ASC", "series") . $this->ask_mysqli->limitWithOutOffset(3));
+        if ($gid == 0) {
+            echo json_encode(array("status" => "0", "message" => "Draw avaliable after 10:15"));
+            die;
+        }
+        echo $gid;
+        $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->selectSpacific(array("gameetime", "series", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"), "winnumber") . $this->ask_mysqli->where(array("gdate" => date("Y-m-d"), "gameid" => $gid), "AND") . $this->ask_mysqli->orderBy("ASC", "series") . $this->ask_mysqli->limitWithOutOffset(3));
         $data2 = array();
         while ($row = $result->fetch_assoc()) {
             //unset($row["loadarray"]);
