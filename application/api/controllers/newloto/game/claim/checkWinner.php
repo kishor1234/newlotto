@@ -62,6 +62,7 @@ class checkWinner extends CAaskController {
                 }
                 $claimStatis = $row["claimstatus"];
                 $ClaimTime = $row["ClaimTime"];
+                $drid=$row["gametimeid"];
                 $sql = $this->ask_mysqli->select("subentry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $row["game"], "own" => $_POST["userid"]), "AND");
                 $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
                 $sum = 0;
@@ -157,7 +158,7 @@ class checkWinner extends CAaskController {
                         $this->adminDB[$_SESSION["db_1"]]->commit();
                         $final = array(
                             "status" => "1",
-                            "message" => "You won! " . ($sum * $ra),
+                            "message" => "You won! " . ($sum * $ra) ."\nDr ID. : {$drid} \nClaim date : {$ClaimTime}",
                             "amount" => (string) ($sum * $ra),
                             "own" => $_POST["userid"],
                             "drawid" => $game_id,
