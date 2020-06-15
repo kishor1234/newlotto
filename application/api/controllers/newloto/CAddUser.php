@@ -90,6 +90,12 @@ class CAddUser extends CAaskController {
             case "deleteGame":
                 $this->deleteGame();
                 break;
+            case "blockno":
+                $this->blockno();
+                break;
+            case "getBlockno":
+                $this->getBlockno();
+                break;
             default :
                 $postdata = file_get_contents("php://input");
                 $request = json_decode($postdata, true);
@@ -120,7 +126,7 @@ class CAddUser extends CAaskController {
         $fileData = $this->uploadFiletoFileSystem('file', $uploadDir);
         $fileData["game"] = $_POST["game"];
         $sql = $this->ask_mysqli->insert("hostgame", $fileData);
-        
+
         if ($this->adminDB[$_SESSION["db_1"]]->query($sql)) {
             echo json_encode(array("toast" => array("success", "Game", " Added Successfully"), "status" => 1, "message" => "Add Successfully.."));
         } else {
@@ -187,6 +193,25 @@ class CAddUser extends CAaskController {
         } else {
             echo json_encode(array("toast" => array("danger", "Game", " Delete Failed..Try again"), "status" => 0, "message" => "Delete Failed..Try again"));
         }
+    }
+
+    function blockno() {
+        $id=$_POST["id"];
+        unset($_POST["action"]);
+        $blockno=  json_encode($_POST);
+        $sql=$this->ask_mysqli->update(array("blockno"=>$blockno),"admin").$this->ask_mysqli->whereSingle(array("id"=>$id));
+        if($this->adminDB[$_SESSION["db_1"]]->query($sql)){
+         echo json_encode(array("toast" => array("success", "Game", " Block no set  Successfully"), "status" => 1, "message" => "Block no set Successfully.."));
+        } else {
+            echo json_encode(array("toast" => array("danger", "Game", " Bloc No set Failed..Try again"), "status" => 0, "message" => "Block no set Try again"));
+        }
+        
+    }
+    
+    function getBlockno(){
+        $resutl =$this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("admin",$_SESSION["db_1"]).$this->ask_mysqli->whereSingle(array("id"=>$_POST["id"])));
+        $row=$resutl->fetch_assoc();
+        echo $row["blockno"];
     }
 
     function loadTable() {

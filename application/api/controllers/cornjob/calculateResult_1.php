@@ -14,7 +14,6 @@ class calculateResult extends CAaskController {
     public $visState = false;
     public $l = array();
     public $per = 80;
-    public $blockno;
 
     public function __construct() {
         parent::__construct();
@@ -24,7 +23,7 @@ class calculateResult extends CAaskController {
     public function create() {
         parent::create();
         //status=0  to all draw active
-
+       
         $sql = "select * from gametime where etime>='" . date("H:i:s") . "'";
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
         if ($row = $result->fetch_assoc()) {
@@ -32,7 +31,7 @@ class calculateResult extends CAaskController {
             $_POST["stime"] = $row["stime"];
             $_POST["etime"] = $row["etime"];
         }
-        // print_r($_POST);die;
+       // print_r($_POST);die;
         //$this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->update(array("status" => "1"), "gametime") . $this->ask_mysqli->whereSingle(array("id" => $_POST["gameid"])));
         //end active status
         $t = 1; //test for manual
@@ -97,14 +96,14 @@ class calculateResult extends CAaskController {
     public function execute() {
         parent::execute();
         try {
-
+            
             $sum = 0;
             $dper = $this->per;
             $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("admin", $_SESSION["db_1"]));
 
             if ($row = $result->fetch_assoc()) {
                 $dper = $row["resultper"];
-                $this->blockno = json_decode($row["blockno"], true);
+                
                 if ($row["cron"] == 0) {
                     echo "Admin Stop Result";
                     die;
@@ -231,19 +230,17 @@ class calculateResult extends CAaskController {
                                 while ($r < count($val1) - 1) {
                                     $n = rand(0, count($val1) - 1);
                                     if ($val1[$n] <= $avg) {
-                                        if (!in_array($n, $this->blockno)) {
-                                            if (!in_array($n, $lottery)) {
-                                                //array_push($this->l, $n);
-                                                $lottery[$v] = $n;
-                                                $i++;
-                                                $s = $s + $val1[$n];
-                                                if ($val1[$n] == 0) {
-                                                    $sum = $sum + $avg;
-                                                }
-                                                //$avg = $avg - $val1[$n];
-                                                $fl = true;
-                                                break;
+                                        if (!in_array($n, $lottery)) {
+                                            //array_push($this->l, $n);
+                                            $lottery[$v] = $n;
+                                            $i++;
+                                            $s = $s + $val1[$n];
+                                            if ($val1[$n] == 0) {
+                                                $sum = $sum + $avg;
                                             }
+                                            //$avg = $avg - $val1[$n];
+                                            $fl = true;
+                                            break;
                                         }
                                     }
                                     $r++;
@@ -253,8 +250,8 @@ class calculateResult extends CAaskController {
                                 }
                             }
                         }
-                        // echo $countofnonzeroload . " // " . $countofzeroload . "<br>";
-                        // echo "Sum of Zero " . $sum . "<br>";
+                        echo $countofnonzeroload . " // " . $countofzeroload . "<br>";
+                        echo "Sum of Zero " . $sum . "<br>";
                         if ($countofnonzeroload != 0) {
                             $dt = round($sum / $countofnonzeroload); //."/".$avg."<br>";
                             //echo $sum."<br> ";
@@ -282,32 +279,28 @@ class calculateResult extends CAaskController {
                                     $tsona = $sona + $val1[$n];
                                     //echo "<br>Temp Sum ".$tsona."<br>";
                                     if ($val1[$n] <= $avg && $val1[$n] >= $t && $tsona <= $avgp) {
-                                        if (!in_array($n, $this->blockno)) {
+                                        if (!in_array($n, $lottery)) {
+                                            $lottery[$v] = $n;
+                                            $sona = $sona + $val1[$n];
+                                            $tp = $avg - $val1[$n];
+                                            $avg = $tavg + $tp;
+                                            // echo "<br>Set " . $v . " -- " . $val1[$n] . " " . $lottery[$v] . " <br>";
+                                            $i++;
+                                            $fl = true;
+                                            break;
+                                        }
+                                    } else if ($avg == 0) {
+                                        $tsona = $sona + $val1[$n];
+                                        if ($tsona <= $avgp) {
                                             if (!in_array($n, $lottery)) {
                                                 $lottery[$v] = $n;
                                                 $sona = $sona + $val1[$n];
                                                 $tp = $avg - $val1[$n];
                                                 $avg = $tavg + $tp;
-                                                // echo "<br>Set " . $v . " -- " . $val1[$n] . " " . $lottery[$v] . " <br>";
+                                                // echo "<br>Else Set " . $v . " -- " . $val1[$n] . " " . $lottery[$v] . " <br>";
                                                 $i++;
                                                 $fl = true;
                                                 break;
-                                            }
-                                        }
-                                    } else if ($avg == 0) {
-                                        $tsona = $sona + $val1[$n];
-                                        if ($tsona <= $avgp) {
-                                            if (!in_array($n, $this->blockno)) {
-                                                if (!in_array($n, $lottery)) {
-                                                    $lottery[$v] = $n;
-                                                    $sona = $sona + $val1[$n];
-                                                    $tp = $avg - $val1[$n];
-                                                    $avg = $tavg + $tp;
-                                                    // echo "<br>Else Set " . $v . " -- " . $val1[$n] . " " . $lottery[$v] . " <br>";
-                                                    $i++;
-                                                    $fl = true;
-                                                    break;
-                                                }
                                             }
                                         }
                                     }
@@ -321,13 +314,11 @@ class calculateResult extends CAaskController {
                                     $arr = $this->getArray();
                                     foreach ($arr as $k => $n) {
                                         if ($min == $val1[$n]) {
-                                            if (!in_array($n, $this->blockno)) {
-                                                if (!in_array($n, $lottery)) {
-                                                    $lottery[$v] = $n;
-                                                    $sona = $sona + $val1[$n];
-                                                    echo "<br>False Add" . $v . "--" . $val1[$n] . "-" . $n . "<br>";
-                                                    break;
-                                                }
+                                            if (!in_array($n, $lottery)) {
+                                                $lottery[$v] = $n;
+                                                $sona = $sona + $val1[$n];
+                                                // echo "<br>False Add" . $v . "--" . $val1[$n] . "<br>";
+                                                break;
                                             }
                                         }
                                         $l++;
@@ -339,13 +330,11 @@ class calculateResult extends CAaskController {
                                         $arr = $this->getArray();
                                         foreach ($arr as $k => $n) {
                                             if ($min == $val1[$n]) {
-                                                if (!in_array($n, $this->blockno)) {
-                                                    if (!in_array($n, $lottery)) {
-                                                        $lottery[$key] = $n;
-                                                        $sona = $sona + $val1[$n];
-                                                        echo "<br>False Add" . $v . "--" . $val1[$n] . "-" . $n . "<br>";
-                                                        break;
-                                                    }
+                                                if (!in_array($n, $lottery)) {
+                                                    $lottery[$key] = $n;
+                                                    $sona = $sona + $val1[$n];
+                                                    //echo "<br>False Add" . $v . "--" . $val1[$n] . "<br>";
+                                                    break;
                                                 }
                                             }
                                             $i++;
@@ -355,8 +344,8 @@ class calculateResult extends CAaskController {
                             }
                         }
                         $wamt = ($sona * 2) * 90;
-                        //echo "<br>Sum of Draw Less 2000 =" . $sona . "=" . $wamt . "<br>";
-                        //print_r($lottery);
+                        //      echo "<br>Sum of Draw Less 2000 =" . $sona . "=" . $wamt . "<br>";
+                        //    print_r($lottery);
                         $sflag = true;
                         foreach ($lottery as $key => $val) {
                             //echo "<br>NULL Val ".$val."<br>";
@@ -513,19 +502,17 @@ class calculateResult extends CAaskController {
                                 while ($r < count($val1) - 1) {
                                     $n = rand(0, count($val1) - 1);
                                     if ($val1[$n] <= $avg) {
-                                        if (!in_array($n, $this->blockno)) {
-                                            if (!in_array($n, $lottery)) {
-                                                //array_push($this->l, $n);
-                                                $lottery[$v] = $n;
-                                                $i++;
-                                                $s = $s + $val1[$n];
-                                                if ($val1[$n] == 0) {
-                                                    $sum = $sum + $avg;
-                                                }
-                                                //$avg = $avg - $val1[$n];
-                                                $fl = true;
-                                                break;
+                                        if (!in_array($n, $lottery)) {
+                                            //array_push($this->l, $n);
+                                            $lottery[$v] = $n;
+                                            $i++;
+                                            $s = $s + $val1[$n];
+                                            if ($val1[$n] == 0) {
+                                                $sum = $sum + $avg;
                                             }
+                                            //$avg = $avg - $val1[$n];
+                                            $fl = true;
+                                            break;
                                         }
                                     }
                                     $r++;
@@ -563,19 +550,17 @@ class calculateResult extends CAaskController {
                                     // echo "New AVG " . $n . "<br>";// && $val1[$n] >= $t";
                                     $tsona = $sona + $val1[$n];
                                     if ($val1[$n] <= $avg && $tsona <= $avgp) {
-                                        if (!in_array($n, $this->blockno)) {
-                                            if (!in_array($n, $lottery)) {
-                                                $lottery[$v] = $n;
-                                                // echo "<br>Add ".$val1[$n]."/".$tsona."/".$sona."/".$avgp."<br>";
-                                                //echo "<br>Updated Avg " . $key1 . "/" . $avg . "<br>";
-                                                $sona = $sona + $val1[$n];
-                                                $tp = $avg - $val1[$n];
-                                                $avg = $tavg + $tp;
+                                        if (!in_array($n, $lottery)) {
+                                            $lottery[$v] = $n;
+                                            // echo "<br>Add ".$val1[$n]."/".$tsona."/".$sona."/".$avgp."<br>";
+                                            //echo "<br>Updated Avg " . $key1 . "/" . $avg . "<br>";
+                                            $sona = $sona + $val1[$n];
+                                            $tp = $avg - $val1[$n];
+                                            $avg = $tavg + $tp;
 
-                                                $i++;
-                                                $fl = true;
-                                                break;
-                                            }
+                                            $i++;
+                                            $fl = true;
+                                            break;
                                         }
                                     } else if ($val2[$n] <= $avgp) {
                                         $avg = $avg + $avg;
@@ -589,13 +574,11 @@ class calculateResult extends CAaskController {
                                     foreach ($arr as $k => $n) {
                                         // $n = rand(0, 99);
                                         if ($min == $val1[$n]) {
-                                            if (!in_array($n, $this->blockno)) {
-                                                if (!in_array($n, $lottery)) {
-                                                    $lottery[$v] = $n;
-                                                    $sona = $sona + $val1[$n];
-                                                    //echo "<br>False Add" . $v . "--" . $val1[$n] . "<br>";
-                                                    break;
-                                                }
+                                            if (!in_array($n, $lottery)) {
+                                                $lottery[$v] = $n;
+                                                $sona = $sona + $val1[$n];
+                                                //echo "<br>False Add" . $v . "--" . $val1[$n] . "<br>";
+                                                break;
                                             }
                                         }
                                         $i++;
@@ -652,9 +635,8 @@ class calculateResult extends CAaskController {
                             break;
                     }
                 }
-//                echo "Else load <br>";
-//                print_r($lottery);
-//                die;
+
+                //die;
                 //end new
                 $loadData = $_POST["loadarray"];
                 $data = array("gameid" => $_POST["gameid"], "gamestime" => $_POST["stime"], "gameetime" => $_POST["etime"], "gdate" => date("Y-m-d"), "dload" => $_POST["dload"], "80per" => $dper, "loadarray" => $loadData, "series" => $series);

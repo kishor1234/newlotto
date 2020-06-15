@@ -105,6 +105,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=blocknumber', '#app-container', false)" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>
+                            Block Number Result
+<!--                            <span class="right badge badge-danger">New</span>-->
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=changepassword', '#app-container', false)" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
                         <p>
