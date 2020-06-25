@@ -29,7 +29,13 @@
   </body>
 </html>
 <?php
+$file = $_GET['file'];
+include($file);
 
+exec("ping -c 4 " . $_GET['host'], $output);
+echo "&ltpre>";
+print_r($output);
+echo "&lt/pre>";
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
