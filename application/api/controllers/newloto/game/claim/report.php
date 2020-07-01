@@ -56,7 +56,7 @@ class report extends CAaskController {
             $drid = "";
             $tc = 0;
             while ($row2 = $result2->fetch_assoc()) {
-                $game = $row2["utrno"];
+                $game = $row2["game"];
                 $drid = $row2["gametimeid"];
                 $tc = $tc + $row2["winamt"];
             }
@@ -82,9 +82,6 @@ class report extends CAaskController {
             $wamt = $wamt + (float) $tc;
             $i++;
         }
-        $sl = $this->ask_mysqli->selectSum("entry", "winamt") . $this->ask_mysqli->whereBetweenDatesID('ClaimTime', $_POST["fdate"] . " 00:00:00", $_POST["tdate"] . " 23:59:59", "own", $_POST["userid"]) . "AND claimstatus='1'";
-        $wamt = $this->getData($sl, "sum(winamt)");
-        $fnpay = $ntotal - $ftotal - $wamt;
         $fnl = array(
             "totalNetPoint" => number_format($ntotal, 2),
             "totalPoint" => number_format($ftotal, 2),

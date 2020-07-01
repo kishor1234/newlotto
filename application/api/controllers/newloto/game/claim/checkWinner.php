@@ -48,11 +48,11 @@ class checkWinner extends CAaskController {
             //$_POST['id'] = 'ask5ed87e5c59b6d';
             //$_POST['userid'] = '20200431';
             $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $_POST["id"], "trno" => $_POST["id"]), "OR") . " AND own='{$_POST["userid"]}'";
-            
+
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
             $ra = 180;
             if ($row = $result->fetch_assoc()) {
-                if (strtotime(date("H:i:s")) < strtotime($row["gameendtime"])) {
+                if (strtotime(date("H:i:s")) < strtotime($row["gameendtime"]) && strtotime(date("Y-m-d")) == strtotime($row["enterydate"])) {
                     $final = array(
                         "status" => "0",
                         "message" => "Draw is not over yet!"
@@ -62,7 +62,7 @@ class checkWinner extends CAaskController {
                 }
                 $claimStatis = $row["claimstatus"];
                 $ClaimTime = $row["ClaimTime"];
-                $drid=$row["gametimeid"];
+                $drid = $row["gametimeid"];
                 $sql = $this->ask_mysqli->select("subentry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $row["game"], "own" => $_POST["userid"]), "AND");
                 $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
                 $sum = 0;
@@ -131,7 +131,7 @@ class checkWinner extends CAaskController {
                     $this->adminDB[$_SESSION["db_1"]]->autocommit(false);
                     $this->amount = $sum * $ra;
                     $error = array();
-                    $sql = $this->ask_mysqli->insert("claim", array("enteryid" => $_POST["userid"], "winnumber" => json_encode($winArray), "gameid" => $row["gametimeid"], "gametime" => $row["gametime"], "gameetime" => $row["gameendtime"], "cdate" => $row["enterydate"]));
+                    $sql = $this->ask_mysqli->insert("claim", array("enteryid" => $_POST["userid"],'utrno'=>$row["utrno"], "winnumber" => json_encode($winArray), "gameid" => $row["gametimeid"], "gametime" => $row["gametime"], "gameetime" => $row["gameendtime"], "cdate" => $row["enterydate"]));
                     $er = $this->adminDB[$_SESSION["db_1"]]->query($sql);
                     $er == false ? array_push($error, "Insert on claim table error " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
                     $max = $this->adminDB[$_SESSION["db_1"]]->insert_id; // $this->getData($this->select("claim", $_SESSION["db_1"]) . $this->whereSingle(array("id" => $this->filterPost("id"))), "id");
@@ -158,7 +158,7 @@ class checkWinner extends CAaskController {
                         $this->adminDB[$_SESSION["db_1"]]->commit();
                         $final = array(
                             "status" => "1",
-                            "message" => "You won! " . ($sum * $ra) ."\nDr ID. : {$drid} \nClaim date : {$ClaimTime}",
+                            "message" => "You won! " . ($sum * $ra) . "\nDr ID. : {$drid} \nClaim date : {$ClaimTime}",
                             "amount" => (string) ($sum * $ra),
                             "own" => $_POST["userid"],
                             "drawid" => $game_id,
