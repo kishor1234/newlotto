@@ -14,7 +14,6 @@ class calculateResult extends CAaskController {
     public $visState = false;
     public $l = array();
     public $per = 80;
-    public $min = 0;
     public $blockno;
 
     public function __construct() {
@@ -105,7 +104,6 @@ class calculateResult extends CAaskController {
 
             if ($row = $result->fetch_assoc()) {
                 $dper = $row["resultper"];
-                $this->min = $row["min"];
                 $this->blockno = json_decode($row["blockno"], true);
                 if ($row["cron"] == 0) {
                     echo "Admin Stop Result";
@@ -375,14 +373,8 @@ class calculateResult extends CAaskController {
                         $sks++;
                     }
                     //echo "<br>Final array</br>";
-
-                    if ($this->min === "1") {
-                        $index = array_search(max($sonaResult), $sonaResult);
-                        $lottery = $markResult[$index];
-                    } else {
-                        $index = array_search(min($sonaResult), $sonaResult);
-                        $lottery = $markResult[$index];
-                    }
+                    $index = array_search(min($sonaResult), $sonaResult);
+                    $lottery = $markResult[$index];
                     //print_r($lottery);
                     //die;
                 } else {
@@ -643,40 +635,20 @@ class calculateResult extends CAaskController {
                     echo "<br>Final array " . $avgp . "</br>";
                     switch ($dper) {
                         case "60":
-                            if ($this->min === "1") {
-                                $index = array_search(max($sonaResult), $sonaResult);
-                                $lottery = $markResult[$index];
-                            } else {
-                                $index = array_search(min($sonaResult), $sonaResult);
-                                $lottery = $markResult[$index];
-                            }
+                            $index = array_search(min($sonaResult), $sonaResult);
+                            $lottery = $markResult[$index];
 
                             break;
                         case "70":
-                            if ($this->min === "1") {
-                                $index = array_search(max($sonaResult), $sonaResult);
-                                $lottery = $markResult[$index];
-                            } else {
-                                $index = array_search(min($sonaResult), $sonaResult);
-                                $lottery = $markResult[$index];
-                            }
+                            $index = array_search(min($sonaResult), $sonaResult);
+                            $lottery = $markResult[$index];
                         case "80":
-                            if ($this->min === "1") {
-                                $index = array_search(max($sonaResult), $sonaResult);
-                                $lottery = $markResult[$index];
-                            } else {
-                                $index = array_search(min($sonaResult), $sonaResult);
-                                $lottery = $markResult[$index];
-                            }
+                            $index = array_search(max($sonaResult), $sonaResult);
+                            $lottery = $markResult[$index];
                             break;
                         default:
-                            if ($this->min === "1") {
-                                $index = array_search(max($sonaResult), $sonaResult);
-                                $lottery = $markResult[$index];
-                            } else {
-                                $index = array_search(min($sonaResult), $sonaResult);
-                                $lottery = $markResult[$index];
-                            }
+                            $index = array_search(max($sonaResult), $sonaResult);
+                            $lottery = $markResult[$index];
                             break;
                     }
                 }

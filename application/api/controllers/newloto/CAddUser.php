@@ -520,7 +520,7 @@ class CAddUser extends CAaskController {
 
     function updateper() {
         try {
-            $sql = $this->ask_mysqli->update(array("resultper" => $_POST["resultper"]), "admin") . $this->ask_mysqli->whereSingle(array("id" => $_POST["id"]));
+            $sql = $this->ask_mysqli->update(array("resultper" => $_POST["resultper"],"min" => $_POST["min"]), "admin") . $this->ask_mysqli->whereSingle(array("id" => $_POST["id"]));
             if ($this->adminDB[$_SESSION["db_1"]]->query($sql)) {
                 echo json_encode(array("toast" => array("success", "Admin", "Information Update Success... "), "status" => 1, "message" => "User Information Update Success.. "));
             } else {
@@ -539,6 +539,7 @@ class CAddUser extends CAaskController {
         $row = $result->fetch_assoc();
         $data["3"] = $row["balance"];
         $data["4"] = $row["resultper"];
+        $data["5"] = $row["min"];
 
         $sql = $this->ask_mysqli->selectCount("enduser", "id");
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);

@@ -130,6 +130,14 @@
                                 <span id="error_name" class=""></span>
                             </div>
                             <div class="form-group">
+                                <label class="form-control-label">Result Min/Max <span class="text-danger">*</span></label>
+                                <select name="min" id="min" placeholder="Result Min/Max" title="Result Min/Max" required autocomplete="off" class="form-control">
+                                    <option value="0">Minimum</option>
+                                    <option value="1">Maximum</option>
+                                </select>
+                                <span id="error_name" class=""></span>
+                            </div>
+                            <div class="form-group">
                                 <input type="hidden" name="action" id="action" value="updateper">
                                 <input type="hidden" id="id" name="id" value="<?= $_SESSION["id"] ?>">
                                 <button class="btn btn-primary btn-sm form-control" id="myMainSubmitPer">Update</button>
@@ -213,7 +221,11 @@
             $("#colleges").html(js[0]);
             $("#students").html(js[2]);
             $("#exams").html(js[3]);
-            $("#per").html(js[4] + "%");
+            if (js[5] === "1") {
+                $("#per").html(js[4] + "%(Max)" );
+            } else {
+                $("#per").html(js[4] + "%(Min)" );
+            }
         });
     }
     function ResultServices(id)
