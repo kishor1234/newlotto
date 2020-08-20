@@ -578,7 +578,7 @@ class CAaskController extends CI_Controller {
         return $resp;
     }
 
-    public function postJsonRespon($url, $data) {
+public function postJsonRespon($url, $data) {
         $data_string = json_encode($data);
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
@@ -592,7 +592,6 @@ class CAaskController extends CI_Controller {
         curl_close($curl);
         return $resp;
     }
-
     //upload any file to filsystem table usind funtion uploadFiletoFileSystem
     //with two parameter $image is post or request file parameter name
     //and $uploadDir is that directory path to save your file  ex.$uploadDir = "assets/upload/profile";
@@ -606,7 +605,7 @@ class CAaskController extends CI_Controller {
             return array(
                 "name" => $name,
                 "extension" => $_FILES[$image]['type'],
-                "url" => game . "" . $filename,
+                "url" => $filename,
                 "path" => $path,
                 "isUsed" => 1
             );

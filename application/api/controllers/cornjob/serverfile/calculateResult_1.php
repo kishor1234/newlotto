@@ -14,7 +14,7 @@ class calculateResult extends CAaskController {
     public $visState = false;
     public $l = array();
     public $per = 80;
-    public $min = "0";
+    public $min = 0;
     public $blockno;
 
     public function __construct() {
@@ -36,9 +36,9 @@ class calculateResult extends CAaskController {
 
         $t = 1; //test for manual
         if ($t === 0) {
-            $_POST["gameid"] = "32";
-            $_POST["stime"] = "17:45:00";
-            $_POST["etime"] = "18:00:00";
+            $_POST["gameid"] = "43";
+            $_POST["stime"] = "20:30:00";
+            $_POST["etime"] = "20:45:00";
         }
 
         return;
@@ -202,14 +202,12 @@ class calculateResult extends CAaskController {
                         $sks++;
                     }
 
-                    if (strcmp($this->min,"1") == 0) {
+                    if ($this->min === "1") {
                         $index = array_search(max($sonaResult), $sonaResult);
                         $lottery = $markResult[$index];
-                        echo "Max Result";
                     } else {
                         $index = array_search(min($sonaResult), $sonaResult);
                         $lottery = $markResult[$index];
-                        echo "Min Result";
                     }
                     //echo "<br>Final array " . $index * 180 . "</br>";
                     // print_r($lottery);

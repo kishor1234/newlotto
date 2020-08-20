@@ -80,7 +80,7 @@ class invoice extends CAaskController {
                             $perPoint = $val["basic"]["perPoint"];
                             //add singel invoice here
 
-                            $unicid = $this->randString(2) . $transaction_id . $this->randString(2);
+                            $unicid = $this->randString(2) . $transaction_id ;//. $this->randString(2)
                             $insertSingleInvoice = array(
                                 "utrno" => $unilast,
                                 "own" => $val["basic"]["userid"],
@@ -110,7 +110,7 @@ class invoice extends CAaskController {
                             $last = 152671 + $last_id;
                             $s = $this->ask_mysqli->update(array("trno" => $last), "entry") . $this->ask_mysqli->whereSingle(array("id" => $last_id));
                             $this->adminDB[$_SESSION["db_1"]]->query($s) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
-                            array_push($finalArray, $this->splitPrintDataAdvance($last_id));
+                            array_push($finalArray, $this->splitPrintDataAdvance($last_id,$error));
                         }
                     }
                     //die;
@@ -168,7 +168,7 @@ class invoice extends CAaskController {
                     $this->adminDB[$_SESSION["db_1"]]->query($sql) != 1 ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
                     $transaction_id = $this->adminDB[$_SESSION["db_1"]]->insert_id;
                     $last = 9536254 + $transaction_id;
-                    $unicid = $this->randString(2) .  $transaction_id . $this->randString(2);
+                    $unicid = $this->randString(2) .  $transaction_id ;//. $this->randString(2);
                     $s = $this->ask_mysqli->update(array("trno" => $last, "invoiceno" => $last), "usertranscation") . $this->ask_mysqli->whereSingle(array("id" => $transaction_id));
                     $this->adminDB[$_SESSION["db_1"]]->query($s) != true ? array_push($error, $this->adminDB[$_SESSION["db_1"]]->error) : true;
 
@@ -181,7 +181,7 @@ class invoice extends CAaskController {
                     //print_r($insertSingleInvoice);
                     $utrno = $last;
                     if (empty($error)) {
-                        $this->splitPrintData($last_id, $utrno);
+                        $this->splitPrintData($last_id, $utrno,$error);
                         //$this->adminDB[$_SESSION["db_1"]]->commit();
                     } else {
                         $this->adminDB[$_SESSION["db_1"]]->rollback();
@@ -214,7 +214,7 @@ class invoice extends CAaskController {
         return;
     }
 
-    function splitPrintDataAdvance($last_id) {
+    function splitPrintDataAdvance($last_id,$error) {
         try {
             $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $last_id));
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
@@ -330,7 +330,7 @@ class invoice extends CAaskController {
         }
     }
 
-    function splitPrintData($last_id, $utrno) {
+    function splitPrintData($last_id, $utrno,$error) {
         try {
             $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => $last_id));
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);

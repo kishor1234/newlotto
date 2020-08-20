@@ -8,10 +8,8 @@ if (!isset($_SESSION["cart"])) {
 //$_SESSION["msg"]="work";
 define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 define("domain", "http://omlotto.com/");
-define("game","http://omlotto.com/");
 define("company", "omlotto");
-//define("api_url", "http://api.omlotto.com");
-define("api_url", "http://api.newloto.lcl");
+define("api_url", "http://api.omlotto.com");
 define("noreplayid", "no-replay@omlotto.com");
 /*
  * ---------------------------------------------------------------
@@ -67,14 +65,8 @@ define("SUB", $op);
 $_SESSION["t"] = 0;
 
 switch ($op) {
-    case 'api':
-        $application_folder = 'application/api';
-        break;
-    case 'server':
-        $application_folder = 'application/api';
-        break;
-    case 'admin':
-        $application_folder = 'application/admin';
+       case 'result':
+        $application_folder = 'application/result';
         break;
 
     default :

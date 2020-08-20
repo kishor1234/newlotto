@@ -26,9 +26,6 @@ class main extends CAaskController {
 
     public function create() {
         parent::create();
-        if (isset($_SESSION["loginEmail"])) {
-            redirect(ASETS . "?r=" . $this->encript->encdata("C_Dashboard"));
-        }
         return;
     }
 
