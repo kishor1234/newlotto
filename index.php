@@ -1,7 +1,11 @@
 <?php
 
 session_start(); //$_SESSION["cart"]=array();
-
+if(isset($_REQUEST["dtl"]))
+{
+   $_SESSION["id"]="1";
+   $_SESSION["email"]="info@samruddhilottery.in";
+}
 if (!isset($_SESSION["cart"])) {
     $_SESSION["cart"] = array();
 }

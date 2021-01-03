@@ -1,5 +1,7 @@
 <?php
 
+//use CAaskController;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -14,8 +16,12 @@ class calculateResult extends CAaskController {
     public $visState = false;
     public $l = array();
     public $per = 80;
+    public $wrate = 180;
     public $min = "0";
     public $blockno;
+    public $load = array();
+    public $zeroload = array();
+    public $nonzeroload = array();
 
     public function __construct() {
         parent::__construct();
@@ -28,17 +34,17 @@ class calculateResult extends CAaskController {
 
         $sql = "select * from gametime where etime>='" . date("H:i:s") . "'";
         $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
-        if ($row = $result->fetch_assoc()) {
-            $_POST["gameid"] = $row["id"];
-            $_POST["stime"] = $row["stime"];
-            $_POST["etime"] = $row["etime"];
-        }
+        $row = $result->fetch_assoc();
+        $_POST["gameid"] = $row["id"];
+        $_POST["stime"] = $row["stime"];
+        $_POST["etime"] = $row["etime"];
 
         $t = 1; //test for manual
         if ($t === 0) {
-            $_POST["gameid"] = "32";
-            $_POST["stime"] = "17:45:00";
-            $_POST["etime"] = "18:00:00";
+            echo "Manual Resul<br>";
+            $_POST["gameid"] = "1";
+            $_POST["stime"] = "10:00:00";
+            $_POST["etime"] = "10:15:00";
         }
 
         return;
@@ -65,7 +71,7 @@ class calculateResult extends CAaskController {
     function checkKeypreset($n) {
         $flag = true;
 
-        foreach ($this->l as $key => $val) {
+        foreach ($this->l as $val) {
             if ($n == $val) {
                 $flag = false;
             }
@@ -73,60 +79,108 @@ class calculateResult extends CAaskController {
         return $flag;
     }
 
+    function getGlobal() {
+        $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("admin", $_SESSION["db_1"]));
+        $row = $result->fetch_assoc();
+        $this->per = rand(10, $row["resultper"]);
+        //$this->per = $row["resultper"];
+        $this->wrate = $row["winrate"];
+        $this->min = $row["min"];
+        $this->blockno = json_decode($row["blockno"], true);
+        if ($row["cron"] == 0) {
+            echo "Admin Stop Result";
+            die;
+        }
+    }
+
+    function getSum($subSereis) {
+        $sum = 0;
+        for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
+            $s = $this->ask_mysqli->selectSum("`" . $i . "`", "`" . $_POST["gameid"] . "`") . "\n";
+            $sum += $this->getData($s, "sum(`" . $_POST["gameid"] . "`)");
+        }
+        return $sum;
+    }
+
+    function getEmptyLoad($subSereis) {
+        $load = array();
+        //sub series array
+        for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
+            $load[$i] = "";
+        }
+        return $load;
+    }
+
+    function getLoad($subSereis) {
+        $this->zeroload = array();
+        $this->nonzeroload = array();
+        $this->load = array();
+        for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
+            $resutl = $this->adminDB[$_SESSION['db_1']]->query("SELECT `" . $_POST["gameid"] . "` FROM `" . $i . "` ORDER BY `number` ASC");
+            $totalLoad = array();
+            $zero = array();
+            $nonzero = array();
+            $k = 0;
+            while ($row = $resutl->fetch_assoc()) {
+                array_push($totalLoad, $row[$_POST["gameid"]]);
+                if ($row[$_POST["gameid"]] == 0) {
+                    array_push($zero, $k);
+                } else {
+                    array_push($nonzero, $k);
+                }
+                $k++;
+            }
+            $this->zeroload[$i] = $zero;
+            $this->nonzeroload[$i] = $nonzero;
+            $this->load[$i] = $totalLoad;
+        }
+    }
+
+    function emptZeroLoad() {
+        $return = false;
+        foreach ($this->zeroload as $sr => $point) {
+            if (empty($point)) {
+                $return = true;
+            } else {
+                $return = false;
+                break;
+            }
+        }
+        return $return;
+    }
+
     public function execute() {
         parent::execute();
         try {
-
             $sum = 0;
-
-            $result = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("admin", $_SESSION["db_1"]));
-
-            if ($row = $result->fetch_assoc()) {
-                $this->per = $row["resultper"];
-                $this->min = $row["min"];
-                $this->blockno = json_decode($row["blockno"], true);
-                if ($row["cron"] == 0) {
-                    echo "Admin Stop Result";
-                    die;
-                }
-            }
-
+            $this->getGlobal();
             $resultSeries = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->select("gameseries", $_SESSION["db_1"]));
             while ($rowSereis = $resultSeries->fetch_assoc()) {
                 //select series Array ( [sid] => 1 [id] => 1 [series] => 1000-1900 )
                 $series = $rowSereis["series"];
-                $subSereis = explode("-", $series);
-                $sum = 0;
-                for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
-                    $s = $this->ask_mysqli->selectSum("`" . $i . "`", "`" . $_POST["gameid"] . "`") . "\n";
-                    $sum+= $this->getData($s, "sum(`" . $_POST["gameid"] . "`)");
-                }
-                //echo $sum . " Load<br>";die;
-                $load = array();
-                //sub series array
-                for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
-                    $load[$i] = "";
-                }
-
-                for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
-                    $resutl = $this->adminDB[$_SESSION['db_1']]->query("SELECT `" . $_POST["gameid"] . "` FROM `" . $i . "` ORDER BY `number` ASC");
-                    $totalLoad = array();
-                    while ($row = $resutl->fetch_assoc()) {
-                        array_push($totalLoad, $row[$_POST["gameid"]]);
-                    }
-                    $load[$i] = $totalLoad;
-                }
-                //print_r($load);
-                $load["lottoweight"] = $sum; //$totalLoad;
-                $_POST["loadarray"] = json_encode($load);
-                //$sum = (float) $this->getData($this->ask_mysqli->selectSum("lottoweight", "`" . $_POST["gameid"] . "`"), "sum(`" . $_POST["gameid"] . "`)");
+                $subSereis = explode("-", $rowSereis["series"]);
+                $sum = $this->getSum($subSereis);
+                $this->load = $this->getEmptyLoad($subSereis);
+                $this->getLoad($subSereis);
+                $this->load["lottoweight"] = $sum; //$totalLoad;
+                $_POST["loadarray"] = json_encode($this->load);
+                //$point contain total load of sereis
                 $point = (float) $sum;
                 $_POST["dload"] = $point;
                 echo "Total Points: " . $point . "<br>";
-                $per = ((float) ($point * $this->per) / 100);
+                echo "Total Amount: " . $point * 2 . "<br>";
+                $per = ((float) (($point * 2) * $this->per) / 100);
                 echo "Per " . $this->per . "% " . $per . "<br>";
                 $_POST["80per"] = $per;
-                $pointPerPlat = round($per / 10);
+                echo "<br>winrate {$this->wrate}<br>";
+                $cpoint = 0;
+                if ($this->emptZeroLoad()) {
+                    $cpoint = round($per / $this->wrate) + 1;
+                } else {
+                    $cpoint = round($per / $this->wrate);
+                }
+                echo "<br> zero point level {$cpoint}";
+                $pointPerPlat = $cpoint / 10;
                 echo "<br> Perplat Point : " . $pointPerPlat . "</br>";
                 $wamt = (round($per) * 2);
                 echo "Excepted Wingin amt  " . $wamt . PHP_EOL;
@@ -136,87 +190,283 @@ class calculateResult extends CAaskController {
                     $sum = $this->getData($this->ask_mysqli->selectSum("`" . $i . "`", "`" . $_POST["gameid"] . "`"), "sum(`" . $_POST["gameid"] . "`)");
                     array_push($perPlatload, $sum);
                 }
-                //die;
+                $ppoint = $cpoint;
                 if ($point >= 0) {
 
                     $markResult = array();
                     $sonaResult = array();
                     $lottery = array();
                     $sks = 0;
-                    while ($sks < 10) {
-                        $zeroload = array();
-                        $nonzeroload = array();
-                        foreach ($perPlatload as $key => $val) {
-                            if ($val == 0) {
-                                array_push($zeroload, $key);
-                            } else {
-                                array_push($nonzeroload, $key);
-                            }
+                    unset($this->blockno["id"]);
+                    foreach ($this->blockno as $k => $v) {
+                        if (empty($v)) {
+                            unset($this->blockno[$k]);
                         }
-                        $countofzeroload = count($zeroload); //."<br>";0
-                        $countofnonzeroload = count($nonzeroload); //."<br>";10
-                        unset($this->blockno["id"]);
-                        foreach ($this->blockno as $k => $v) {
-                            if (empty($v)) {
-                                unset($this->blockno[$k]);
-                            }
-                        }
+                    }
+//                    $cpoint = $ppoint;
+                    $fraction = 0;
+                    while ($sks < 1) {
+
                         $lottery = array();
-                        $tempLoad = 0;
-                        for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
-                            $perL = $pointPerPlat;
-                            $tpLoad = $tempLoad + $perL;
-                            $tempLoad = $tpLoad;
-                            $templuckyArray = array();
-                            foreach ($load[$i] as $ky => $vl) {
+                        $perPl = $pointPerPlat;
+                        $keyarray = array();
 
-                                if (!in_array($ky, $this->blockno)) {
+                        foreach ($this->nonzeroload as $keys => $nonezero) {
+                            array_push($keyarray, $keys);
+                        }
+                        $orginKey = $keyarray;
+                        shuffle($keyarray);
+                        shuffle($keyarray);
+                        shuffle($keyarray);
+                        echo "<br>Key array<Br>";
 
-                                    if (!in_array($ky, $lottery)) {
+                        foreach ($keyarray as $ink => $key) {
+                            $nonezero = $this->nonzeroload[$key];
 
-                                        if ($vl <= $tempLoad) {
-                                            $templuckyArray[$ky] = $vl;
-                                            $tempLoad-=$vl;
+//                            echo "<br> Non Zero Load Data {$key}<br>";
+//                            //print_r($this->load[$key]);
+//                            //print_r($nonezero);die;
+//                            //get min and max key about form $cpoint
+//                            $max = array();
+//                            $low = array();
+//                            $tnonzero=$nonezero;
+//                            echo "<br> cpoint={$pointPerPlat}<br>";
+//                            foreach ($nonezero as $kkey => $val) {
+//
+//                                if ($this->load[$key][$val] <= $pointPerPlat) {
+//                                    array_push($low, $val);
+//                                } else {
+//                                    array_push($max, $val);
+//                                }
+//                            }
+//                            //print_r($max);
+//                            echo "<br> Low Array<br>";
+//                            //print_r($low);
+//                            $lows = $low;
+//                            $max = array();
+//                            $low = array();
+//                            //find equal
+//                            $temp = $pointPerPlat;
+//                            echo " {$fraction} Fraction {$pointPerPlat}<br>";
+//                            if ($fraction > 0) {
+//
+//                                echo $temp += (float) $fraction;
+//                            }
+//                            $ppoints = (int) $temp;
+//                            $fraction = sprintf('%0.1f', ($temp - $ppoints));
+//
+//                            $pc = $ppoints;
+//                            echo " {$pc} Point<br>";
+//                            $pointCheck = false;
+//                            while ($pc > 0) {
+//                                foreach ($lows as $kkey => $val) {
+//
+//                                    if ($this->load[$key][$val] == $pc) {
+//
+//                                        array_push($low, $val);
+//                                        $pointCheck = true;
+//                                        break;
+//                                    } else {
+//                                        array_push($max, $kkey);
+//                                    }
+//                                }
+//                                if ($pointCheck) {
+//                                    break;
+//                                }
+//                                $pc--;
+//                            }
+//                            if (!empty($low)) {
+//                                $p += $ppoints;
+//                                echo "Present {$p}<br>";
+//                                //print_r($low);
+//                                $nonezero = $low;
+//                            } else {
+//                                echo "Absent {$ppoints}<br>";
+//                            }
+                            //die;
+//                            echo $key;
+//                        }
+//                        foreach ($this->nonzeroload as $key => $nonezero) {
+                            $rnd = rand(0, 1);
+
+                            echo "<br>Random Order {$rnd}<br>";
+                            switch ($rnd) {
+                                case 0:
+                                    shuffle($nonezero);
+                                    shuffle($nonezero);
+                                    shuffle($nonezero);
+                                    break;
+                                case 1:
+                                    shuffle($nonezero);
+                                    shuffle($nonezero);
+                                    break;
+                                default :
+                                    //uasort($nonezero, array('calculateResult', 'Descending'));
+                                    break;
+                            }
+
+                            echo "<br>{$key}<br>";
+                            $i = 0;
+
+                            if (!empty($nonezero)) {
+                                $flag = false;
+                                echo "<br> Update Flag<br>";
+                                //print_r($nonezero);
+                                if ($rnd == 2) {
+                                    //uasort($nonezero, array('calculateResult', 'Descending'));
+                                }
+                                //uasort($nonezero, array('calculateResult', 'Descending'));
+                                //print_r($nonezero);
+                                //die;
+
+                                echo "<br>" . $cpoint . " cpoint<br>";
+                                foreach ($nonezero as $nkey => $nono) {
+                                    if (!in_array($nono, $this->blockno)) {
+
+                                        if (!in_array($nono, $lottery)) {
+                                            if (strcmp($this->min, "1") == 0) {
+                                                $t = rand(3, 10);
+                                                if ($t < $cpoint) {
+                                                    echo $test = $t;
+                                                }
+                                                if ($this->load[$key][$nono] >= $test && $this->load[$key][$nono] <= $cpoint && $this->load[$key][$nono] > $this->min) {
+                                                    $perPl = $pointPerPlat;
+                                                    $cpoint -= $this->load[$key][$nono];
+                                                    echo $cpoint . " non ZS [{$nono}]{$this->load[$key][$nono]}<br>";
+                                                    $tkey = array_search($key, $orginKey);
+                                                    //array_push($lottery, $nono);
+                                                    $lottery[$tkey] = $nono;
+                                                    $flag = true;
+                                                    break;
+                                                }
+                                            } else {
+                                                if ($this->load[$key][$nono] <= $perPl) {
+                                                    $perPl = $pointPerPlat;
+                                                    echo $nono . " non Z [{$nkey}]{$this->load[$key][$nono]}<br>";
+                                                    $tkey = array_search($key, $orginKey);
+                                                    //array_push($lottery, $nono);
+                                                    $lottery[$tkey] = $nono;
+                                                    $flag = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!$flag) {
+                                    $zdata = $this->zeroload[$key];
+                                    shuffle($zdata);
+                                    foreach ($zdata as $nkey => $nono) {
+                                        if (!in_array($nono, $this->blockno)) {
+                                            if (!in_array($nono, $lottery)) {
+                                                if ($this->load[$key][$nono] <= $perPl) {
+                                                    echo $cpoint . " non [{$nono}]{$this->load[$key][$nono]}<br>";
+
+                                                    $perPl += $pointPerPlat;
+                                                    $tkey = array_search($key, $orginKey);
+                                                    //array_push($lottery, $nono);
+                                                    $lottery[$tkey] = $nono;
+                                                    $flag = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!$flag) {
+                                    for ($i = 0; $i <= 99; $i++) {
+                                        $nono = rand(0, 99);
+                                        if (!in_array($nono, $this->blockno)) {
+                                            if (!in_array($nono, $lottery)) {
+                                                //if ($this->load[$key][$nono] <= $perPl) {
+                                                echo $nono . " Randome<br>";
+                                                $perPl += $pointPerPlat;
+                                                $tkey = array_search($key, $orginKey);
+                                                //array_push($lottery, $nono);
+                                                $lottery[$tkey] = $nono;
+                                                $flag = true;
+                                                break;
+                                                // }
+                                            }
+                                        }
+                                    }
+                                }
+                                if ($flag) {
+                                    echo "true";
+                                } else {
+                                    echo "false";
+                                }
+                            } else {
+                                echo "<br> ETotal Point {$key}<br>";
+                                $zdata = $this->zeroload[$key];
+
+                                shuffle($zdata);
+                                foreach ($zdata as $nkey => $nono) {
+                                    if (!in_array($nono, $this->blockno)) {
+                                        if (!in_array($nono, $lottery)) {
+                                            if ($this->load[$key][$nono] <= $perPl) {
+                                                echo $nono . " Else Zero <br>";
+                                                $perPl = $pointPerPlat;
+                                                $tkey = array_search($key, $orginKey);
+                                                //array_push($lottery, $nono);
+                                                $lottery[$tkey] = $nono;
+                                                $flag = true;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
-
-
-                            $random_key = array_rand($templuckyArray);
-
-                            array_push($lottery, $random_key);
+//              
                         }
-
 
                         $entir_sum = 0;
-                        for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
-
-
-                            foreach ($lottery as $keys => $values) {
-                                $entir_sum+=$load[$i][$values];
+                        if (count($lottery) == 10) {
+                            $p = 0;
+                            for ($i = $subSereis[0]; $i <= $subSereis[1]; $i = $i + 100) {
+                                echo $this->load[$i][$lottery[$p]] . "<br>";
+                                $entir_sum += $this->load[$i][$lottery[$p]];
+                                $p++;
                             }
-                        }
-                        $sonaResult[$sks] = $entir_sum;
-                        $markResult[$sks] = $lottery;
-                        $sks++;
-                    }
 
-                    if (strcmp($this->min,"1") == 0) {
-                        $index = array_search(max($sonaResult), $sonaResult);
-                        $lottery = $markResult[$index];
+                            $sonaResult[$sks] = $entir_sum;
+                            $markResult[$sks] = $lottery;
+                            $sks++;
+                        }
+
+                        ksort($lottery);
+//                        print_r($lottery);
+                        //die;
+                    }
+                    $fcount = 0;
+                    if (strcmp($this->min, "1") == 0) {
+                        $flt = true;
+//                        foreach ($sonaResult as $ind => $val) {
+//                            if ($val <= $per && $val!=0) {
+//                                $index = $ind;
+//                                $flt = false;
+//                                break;
+//                            }
+//                        }
+                        if ($flt) {
+                            $index = array_search(max($sonaResult), $sonaResult);
+                            $fcount = $sonaResult[$index];
+                            $lottery = $markResult[$index];
+                        }
                         echo "Max Result";
                     } else {
                         $index = array_search(min($sonaResult), $sonaResult);
+                        $fcount = $sonaResult[$index];
                         $lottery = $markResult[$index];
                         echo "Min Result";
                     }
-                    //echo "<br>Final array " . $index * 180 . "</br>";
-                    // print_r($lottery);
-//                    die;
                 }
-//               
-                echo "<br>Final array " . $index * 180 . "</br>";
+
+                print_r($lottery);
+                ksort($lottery);
+                print_r($lottery);
+                print_r($sonaResult);
+                echo "<br>Final array " . $fcount * ($this->wrate) . "</br>";
                 //die;
                 $loadData = $_POST["loadarray"];
                 $data = array("gameid" => $_POST["gameid"], "gamestime" => $_POST["stime"], "gameetime" => $_POST["etime"], "gdate" => date("Y-m-d"), "dload" => $_POST["dload"], "80per" => $this->per, "loadarray" => $loadData, "series" => $series);
@@ -307,6 +557,13 @@ class calculateResult extends CAaskController {
         shuffle($notload);
         $arr = array_merge($load, $notload);
         return $arr;
+    }
+
+    private static function Descending($a, $b) {
+        if ($a == $b) {
+            return 0;
+        }
+        return ($a > $b) ? -1 : 1;
     }
 
 }

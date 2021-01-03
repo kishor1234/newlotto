@@ -1,9 +1,9 @@
 <p id="tickets-data">
 <div class="ticketContainer">
-    <div class="game_title">
+<!--    <div class="game_title">
         <img class="logo" src="assets/static/logo/rajashriPrint.png" alt=""/>
-    </div>
-    <div class="lotteryname">Rajlaxami Lottery</div>
+    </div>-->
+    <div class="lotteryname">Samrudhi Lottery</div>
     <div class="drawTime">
         <?php
         $date = new \DateTime($row["gameendtime"]);

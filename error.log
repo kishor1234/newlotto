@@ -1,0 +1,113 @@
+Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/admin/controllers/Crout.php(11): CAaskController->__construct()
+#3 /var/www/html/newloto/system/core/CodeIgniter.php(518): Crout->__construct()
+#4 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#5 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/admin/controllers/core/main.php(24): CAaskController->__construct()
+#3 /var/www/html/newloto/application/admin/controllers/Crout.php(60): main->__construct()
+#4 /var/www/html/newloto/system/core/CodeIgniter.php(532): Crout->index()
+#5 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#6 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/admin/controllers/Crout.php(11): CAaskController->__construct()
+#3 /var/www/html/newloto/system/core/CodeIgniter.php(518): Crout->__construct()
+#4 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#5 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/admin/controllers/core/main.php(24): CAaskController->__construct()
+#3 /var/www/html/newloto/application/admin/controllers/Crout.php(60): main->__construct()
+#4 /var/www/html/newloto/system/core/CodeIgniter.php(532): Crout->index()
+#5 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#6 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/Crout.php(11): CAaskController->__construct()
+#3 /var/www/html/newloto/system/core/CodeIgniter.php(518): Crout->__construct()
+#4 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#5 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/Crout.php(11): CAaskController->__construct()
+#3 /var/www/html/newloto/system/core/CodeIgniter.php(518): Crout->__construct()
+#4 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#5 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/admin/login.php(25): CAaskController->__construct()
+#3 /var/www/html/newloto/application/api/controllers/Crout.php(61): login->__construct()
+#4 /var/www/html/newloto/system/core/CodeIgniter.php(532): Crout->index()
+#5 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#6 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/Crout.php(11): CAaskController->__construct()
+#3 /var/www/html/newloto/system/core/CodeIgniter.php(518): Crout->__construct()
+#4 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#5 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/admin/login.php(25): CAaskController->__construct()
+#3 /var/www/html/newloto/application/api/controllers/Crout.php(61): login->__construct()
+#4 /var/www/html/newloto/system/core/CodeIgniter.php(532): Crout->index()
+#5 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#6 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/Crout.php(11): CAaskController->__construct()
+#3 /var/www/html/newloto/system/core/CodeIgniter.php(518): Crout->__construct()
+#4 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#5 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/admin/login.php(25): CAaskController->__construct()
+#3 /var/www/html/newloto/application/api/controllers/Crout.php(61): login->__construct()
+#4 /var/www/html/newloto/system/core/CodeIgniter.php(532): Crout->index()
+#5 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#6 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/Crout.php(11): CAaskController->__construct()
+#3 /var/www/html/newloto/system/core/CodeIgniter.php(518): Crout->__construct()
+#4 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#5 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/api/controllers/admin/login.php(25): CAaskController->__construct()
+#3 /var/www/html/newloto/application/api/controllers/Crout.php(61): login->__construct()
+#4 /var/www/html/newloto/system/core/CodeIgniter.php(532): Crout->index()
+#5 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#6 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/admin/controllers/Crout.php(11): CAaskController->__construct()
+#3 /var/www/html/newloto/system/core/CodeIgniter.php(518): Crout->__construct()
+#4 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#5 {main}Exception: Access denied for user 'root'@'localhost' (using password: YES) in /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php:53
+Stack trace:
+#0 /var/www/html/newloto/AaskAPP/system/lib/ask_mysqli.php(24): ask_mysqli->checkMysqliConnectinError()
+#1 /var/www/html/newloto/AaskAPP/CAaskController.php(56): ask_mysqli->_dbConnection()
+#2 /var/www/html/newloto/application/admin/controllers/core/main.php(24): CAaskController->__construct()
+#3 /var/www/html/newloto/application/admin/controllers/Crout.php(60): main->__construct()
+#4 /var/www/html/newloto/system/core/CodeIgniter.php(532): Crout->index()
+#5 /var/www/html/newloto/index.php(267): require_once('/var/www/html/n...')
+#6 {main}

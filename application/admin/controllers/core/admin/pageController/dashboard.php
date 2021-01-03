@@ -37,8 +37,8 @@ class dashboard extends CAaskController {
         try {
             //echo $postdata = file_get_contents("php://input");
             //$this->writeExample();
-            
-           // die;
+//            print_r($_POST);
+//            die;
             $_SESSION["request"]=$_REQUEST;
             if(isset($_POST['condition']))
             {

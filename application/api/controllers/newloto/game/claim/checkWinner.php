@@ -42,16 +42,18 @@ class checkWinner extends CAaskController {
     public function execute() {
         parent::execute();
         try {
+
             $postdata = file_get_contents("php://input");
             $_POST = json_decode($postdata, true);
             $final = array();
             //$_POST['id'] = 'ask5ed87e5c59b6d';
             //$_POST['userid'] = '20200431';
-            $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $_POST["id"], "trno" => $_POST["id"]), "OR") . " AND own='{$_POST["userid"]}'";
-
+            // $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $_POST["id"], "trno" => $_POST["id"]), "OR") . " AND own='{$_POST["userid"]}'";
+            $sql = $this->ask_mysqli->select("entry", $_SESSION["db_1"]) . $this->ask_mysqli->where(array("game" => $_POST["id"], "own" => $_POST["userid"]), "AND"); // . " AND own='{$_POST["userid"]}'";
             $result = $this->adminDB[$_SESSION["db_1"]]->query($sql);
             $ra = 180;
             if ($row = $result->fetch_assoc()) {
+
                 if (strtotime(date("H:i:s")) < strtotime($row["gameendtime"]) && strtotime(date("Y-m-d")) == strtotime($row["enterydate"])) {
                     $final = array(
                         "status" => "0",
@@ -109,7 +111,7 @@ class checkWinner extends CAaskController {
                     $pri = $sum * $ra;
                     $final = array(
                         "status" => "0",
-                        "message" => "Ticket already claimed \nPrize Amount:{$pri} \nClaim date : {$ClaimTime}",
+                        "message" => "Ticket already claimed \nPoint win:{$pri} \nClaim date : {$ClaimTime}",
                         "amount" => (string) ($sum * $ra),
                         "own" => $_POST["userid"],
                         "drawid" => $game_id,
@@ -125,13 +127,13 @@ class checkWinner extends CAaskController {
                         "drawid" => $game_id,
                         "winPoint" => $winArray
                     );
-                    $er = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->update(array("winamt" => $this->amount, "winstatus" => 0, "claimstatus" => 1), "entry") . $this->ask_mysqli->whereSingle(array("game" => $_POST["id"])));
+                    $er = $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->update(array("winamt" => $this->amount, "winstatus" => 0, "claimstatus" => 0), "entry") . $this->ask_mysqli->whereSingle(array("game" => $_POST["id"])));
                     // $er == false ? array_push($error, "Update win and claim status  table error " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
                 } else {
                     $this->adminDB[$_SESSION["db_1"]]->autocommit(false);
                     $this->amount = $sum * $ra;
                     $error = array();
-                    $sql = $this->ask_mysqli->insert("claim", array("enteryid" => $_POST["userid"],'utrno'=>$row["utrno"], "winnumber" => json_encode($winArray), "gameid" => $row["gametimeid"], "gametime" => $row["gametime"], "gameetime" => $row["gameendtime"], "cdate" => $row["enterydate"]));
+                    $sql = $this->ask_mysqli->insert("claim", array("enteryid" => $_POST["userid"], 'utrno' => $row["utrno"], "winnumber" => json_encode($winArray), "gameid" => $row["gametimeid"], "gametime" => $row["gametime"], "gameetime" => $row["gameendtime"], "cdate" => $row["enterydate"]));
                     $er = $this->adminDB[$_SESSION["db_1"]]->query($sql);
                     $er == false ? array_push($error, "Insert on claim table error " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
                     $max = $this->adminDB[$_SESSION["db_1"]]->insert_id; // $this->getData($this->select("claim", $_SESSION["db_1"]) . $this->whereSingle(array("id" => $this->filterPost("id"))), "id");
@@ -141,7 +143,14 @@ class checkWinner extends CAaskController {
                     $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->updateINC(array("balance" => $this->amount), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $_POST["userid"]))) != 1 ? array_push($error, "Error on Update Wining Points Update " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
                     //echo($this->insert("transaction", $_SESSION["db_1"], array("userid" => $_SESSION["userid"], "debit" => $this->amount, "remark" => "Winner Point's transfer " . $this->amount . " Invoic ID#" . $this->filterPost("id"), "ip" => $_SERVER["REMOTE_ADDR"], "balance" => $this->getData($this->select("enduser", $_SESSION["db_1"]) . $this->whereSingle(array("userid" => $_SESSION["userid"])), "balance"))));// != 1 ? array_push($error, "Error on Transcation Table Error Code 02 ") : true;
                     //$this->adminDB[$_SESSION["db_1"]]->query($this->update(array("winamt"=>$this->amount), "entry").$this->whereSingle(array("id"=>$s[1])))!=1?array_push($error, "Unable to update Net Payable "):true;
-                    $sql = $this->ask_mysqli->insert("transaction", array("userid" => $_POST["userid"], "debit" => $this->amount, "remark" => "Winner Point\'s transfer " . $this->amount . " Invoic ID#" . $this->filterPost("id"), "ip" => $_SERVER["REMOTE_ADDR"], "balance" => $this->getData($this->ask_mysqli->select("enduser", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("userid" => $_POST["userid"])), "balance")));
+
+                    $sql = $this->ask_mysqli->insert("transaction", array("userid" => $_POST["userid"], "credit" => $this->amount, "remark" => "Winner Point\'s transfer " . $this->amount . " Invoic ID#" . $_POST["id"], "ip" => $_SERVER["REMOTE_ADDR"], "balance" => $this->getData($this->ask_mysqli->select("enduser", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("userid" => $_POST["userid"])), "balance")));
+                    $this->adminDB[$_SESSION["db_1"]]->query($sql) != 1 ? array_push($error, "Error on Transcation Table Error Code 02 " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
+                    //admin point tr
+                    $sql = $this->ask_mysqli->_updateINC(array("balance" => "balance-" .  $this->amount), "admin") . $this->ask_mysqli->whereSingle(array("id" => 1));
+                    $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB["db_1"]->error) : true;
+                    //admin transaction
+                    $sql = $this->ask_mysqli->insert("transaction", array("userid" => 1, "credit" => $this->amount, "remark" => "Admin transfer Winner Point\'s " . $this->amount . " Invoic ID#" . $_POST["id"], "ip" => $_SERVER["REMOTE_ADDR"], "balance" => $this->getData($this->ask_mysqli->select("admin", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("id" => 1)), "balance")));
                     $this->adminDB[$_SESSION["db_1"]]->query($sql) != 1 ? array_push($error, "Error on Transcation Table Error Code 02 " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
 
                     if (!empty($error)) {

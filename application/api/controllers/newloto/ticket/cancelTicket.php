@@ -54,6 +54,9 @@ class cancelTicket extends CAaskController {
         $balance = $row["total"];
         $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->updateINC(array("balance" => $balance), "enduser") . $this->ask_mysqli->whereSingle(array("userid" => $row["userid"]))) != 1 ? array_push($error, "Update Balance Error " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
 //after balance update
+        $sql = $this->ask_mysqli->insert("transaction", array("userid" => $row["userid"], "credit" => $balance, "remark" => "Cancel Tickt by user, ticket at PT {$balance}", "ip" => $_SERVER["REMOTE_ADDR"], "balance" => $this->getData($this->ask_mysqli->select("enduser", $_SESSION["db_1"]) . $this->ask_mysqli->whereSingle(array("userid" => $row["userid"])), "balance")));
+        $this->adminDB[$_SESSION["db_1"]]->query($sql) != true ? array_push($error, $this->adminDB["db_1"]->error) : true;
+
         //1=active 0=deactive
         $this->adminDB[$_SESSION["db_1"]]->query($this->ask_mysqli->update(array("active" => 0), "usertranscation") . $this->ask_mysqli->whereSingle(array("trno" => $_POST["utrno"]))) != 1 ? array_push($error, "Transaction Error " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
         //transaction deactive complete
@@ -78,7 +81,7 @@ class cancelTicket extends CAaskController {
                         $inTable = $index - $inValue;
 
                         $qq = $this->ask_mysqli->updateDNC(array("`" . $row2["gametimeid"] . "`" => $value), "`{$inTable}`") . $this->ask_mysqli->whereSingle(array("number" => sprintf("%02d", $inValue)));
-                        
+
                         $this->adminDB[$_SESSION["db_1"]]->query($qq) != 1 ? array_push($error, "Unable to Reove load " . $this->adminDB[$_SESSION["db_1"]]->error) : true;
                     }
                 }

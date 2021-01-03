@@ -67,6 +67,18 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=userreports', '#app-container', false)" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>User Sell</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=transaction', '#app-container', false)" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Transaction</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=grandSale', '#app-container', false)" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>My Grand Sell</p>
@@ -86,6 +98,7 @@
                         </li>
                     </ul>
                 </li>
+                
                 <li class="nav-item">
                     <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=host', '#app-container', false)" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
@@ -95,12 +108,12 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item">
+                
+<!--                <li class="nav-item">
                     <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=manualresult', '#app-container', false)" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
                         <p>
                             Manual Result
-<!--                            <span class="right badge badge-danger">New</span>-->
                         </p>
                     </a>
                 </li>
@@ -109,10 +122,9 @@
                         <i class="nav-icon fas fa-th"></i>
                         <p>
                             Block Number Result
-<!--                            <span class="right badge badge-danger">New</span>-->
                         </p>
                     </a>
-                </li>
+                </li>-->
                 <li class="nav-item">
                     <a href="javascript:void(0)" onclick="clickOnLink('/?r=dashboard&v=changepassword', '#app-container', false)" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
